@@ -1,14 +1,12 @@
-public class Profissional {
-    public String nome;
+public abstract class Profissional extends Pessoa {
     public String especialidade;
     public String registroProfissional;
     public double valorConsulta;
     public String[] diasDisponiveis;
     public int totalDias;
 
-    // so nome e especialidade
     public Profissional(String nome, String especialidade) {
-        this.nome = nome;
+        super(nome, "00000000000", "Não Informado", "01/01/1980");
         this.especialidade = especialidade;
         this.registroProfissional = "";
         this.valorConsulta = 0;
@@ -17,7 +15,7 @@ public class Profissional {
     }
 
     public Profissional(String nome, String especialidade, String registroProfissional, double valorConsulta) {
-        this.nome = nome;
+        super(nome, "00000000000", "Não Informado", "01/01/1980");
         this.especialidade = especialidade;
         this.registroProfissional = registroProfissional;
         this.valorConsulta = valorConsulta;
@@ -25,10 +23,8 @@ public class Profissional {
         this.totalDias = 0;
     }
 
-    // construtor completo com dias
-    public Profissional(String nome, String especialidade, String registroProfissional,
-                        double valorConsulta, String[] dias, int totalDias) {
-        this.nome = nome;
+    public Profissional(String nome, String especialidade, String registroProfissional, double valorConsulta, String[] dias, int totalDias) {
+        super(nome, "00000000000", "Não Informado", "01/01/1980");
         this.especialidade = especialidade;
         this.registroProfissional = registroProfissional;
         this.valorConsulta = valorConsulta;
@@ -38,6 +34,12 @@ public class Profissional {
             this.diasDisponiveis[i] = dias[i];
         }
     }
+
+    protected boolean validarRegistro() {
+        return this.registroProfissional != null && !this.registroProfissional.trim().isEmpty();
+    }
+
+    public abstract void registrarEspecifico(Object atendimento);
 
     public void atualizar(String registro, double valor) {
         this.registroProfissional = registro;
@@ -53,7 +55,6 @@ public class Profissional {
         }
     }
 
-    // verifica se o profissional atende naquele dia
     public boolean atendeNoDia(String dia) {
         for (int i = 0; i < totalDias; i++) {
             if (diasDisponiveis[i].equals(dia)) {
@@ -63,7 +64,6 @@ public class Profissional {
         return false;
     }
 
-    // valida as especialidades aceitas pela clinica
     public static boolean especialidadeValida(String esp) {
         if (esp.equals("clinica geral")) return true;
         if (esp.equals("fisioterapia")) return true;
@@ -72,13 +72,14 @@ public class Profissional {
         return false;
     }
 
+    @Override
     public String exibirResumo() {
         String dias = "";
         for (int i = 0; i < totalDias; i++) {
             if (i > 0) dias = dias + ", ";
             dias = dias + diasDisponiveis[i];
         }
-        return "Nome: " + nome + " | Espec: " + especialidade + " | Reg: " + registroProfissional
+        return "Nome: " + this.nome + " | Espec: " + especialidade + " | Reg: " + registroProfissional
                 + " | Valor: R$" + valorConsulta + " | Dias: " + dias;
     }
 }
