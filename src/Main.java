@@ -203,6 +203,12 @@ public class Main {
             }
         }
     }
+    public static Profissional criarProfissionalPorEspecialidade(String nome, String esp) {
+        if (esp.equals("fisioterapia")) {
+            return new Fisioterapeuta(nome);
+        }
+        return null;
+    }
 
     public static void cadastrarProfissional() {
         System.out.print("Nome: ");
@@ -219,7 +225,10 @@ public class Main {
         int tipo = Integer.parseInt(sc.nextLine());
 
         if (tipo == 1) {
-            profissionais[totalProfissionais] = new Profissional(nome, esp);
+            profissionais[totalProfissionais] = criarProfissionalPorEspecialidade(nome, esp);
+            if (profissionais[totalProfissionais] == null) {
+                return;
+            }
         } else if (tipo == 2) {
             System.out.print("Registro: ");
             String reg = sc.nextLine();
