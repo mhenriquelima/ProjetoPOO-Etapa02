@@ -60,3 +60,5 @@ public class Atendimento {
     public String getDiagnostico() {
         return prontuario.diagnostico;
     }
+
+}
