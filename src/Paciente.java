@@ -3,7 +3,8 @@ public class Paciente {
     public String cpf;
     public int idade;
     public String telefone;
-    public String convenioNome;
+    // ASSOCIAÇÃO (R8)
+    public Convenio convenio;
     public boolean ativo;
 
     public Paciente(String nome, String cpf) {
@@ -11,7 +12,7 @@ public class Paciente {
         this.cpf = cpf;
         this.idade = 0;
         this.telefone = "";
-        this.convenioNome = "";
+        this.convenio = null;
         this.ativo = true;
     }
 
@@ -20,17 +21,17 @@ public class Paciente {
         this.cpf = cpf;
         this.idade = idade;
         this.telefone = telefone;
-        this.convenioNome = "";
+        this.convenio = null;
         this.ativo = true;
     }
 
     // construtor com todos os dados
-    public Paciente(String nome, String cpf, int idade, String telefone, String convenioNome) {
+    public Paciente(String nome, String cpf, int idade, String telefone, Convenio convenio) {
         this.nome = nome;
         this.cpf = cpf;
         this.idade = idade;
         this.telefone = telefone;
-        this.convenioNome = convenioNome;
+        this.convenio = convenio;
         this.ativo = true;
     }
 
@@ -41,10 +42,10 @@ public class Paciente {
     }
 
     // atualiza tudo incluindo convenio
-    public void complementar(int idade, String telefone, String convenioNome) {
+    public void complementar(int idade, String telefone, Convenio convenio) {
         this.idade = idade;
         this.telefone = telefone;
-        this.convenioNome = convenioNome;
+        this.convenio = convenio;
     }
 
     public void desativar() {
@@ -57,7 +58,7 @@ public class Paciente {
             status = "Nao";
         }
         return "Nome: " + nome + " | CPF: " + cpf + " | Idade: " + idade
-                + " | Tel: " + telefone + " | Convenio: " + convenioNome
+                + " | Tel: " + telefone + " | Convenio: " + (convenio == null ? "" : convenio.getNome())
                 + " | Ativo: " + status;
     }
 }
