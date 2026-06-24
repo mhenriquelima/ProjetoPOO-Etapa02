@@ -59,7 +59,7 @@ public abstract class Pessoa {
 
     public String getDataNascimento() {
         if (this.dataNascimento == null) return "";
-        return this.dataNascimento.format(DateTimeFormatter.ofPattern("dd/MM/aaaa"));
+        return this.dataNascimento.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
     public void setDataNascimento(String dataNascimento) {
@@ -67,7 +67,7 @@ public abstract class Pessoa {
             throw new IllegalArgumentException("A data de nascimento não pode ser vazia.");
         }
         try {
-            this.dataNascimento = LocalDate.parse(dataNascimento, DateTimeFormatter.ofPattern("dd/MM/aaaa"));
+            this.dataNascimento = LocalDate.parse(dataNascimento, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         } catch (Exception e) {
             throw new IllegalArgumentException("Formato de data inválido. Use dd/MM/aaaa.");
         }
