@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model;
+
 public class Consulta {
     public String cpfPaciente;
     public String nomeProfissional;

@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model;
+
 public class Relatorio {
 
     // mostra todas as consultas

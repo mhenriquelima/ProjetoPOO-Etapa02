@@ -1,9 +1,16 @@
+package br.com.clinicaVidaPlena.model.pessoa;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import br.com.clinicaVidaPlena.model.HorarioDisponivel;
+
 public abstract class Profissional extends Pessoa {
-    private String especialidade;
-    private String registroProfissional;
-    private double valorConsulta;
-    public String[] diasDisponiveis;
-    public int totalDias;
+    public String especialidade;
+    public String registroProfissional;
+    public double valorConsulta;
+    // AGREGAÇÃO (R8)
+    private List<HorarioDisponivel> horariosDisponiveis;    
 
     public Profissional(String nome, String especialidade) {
         super(nome, "00000000000", "Não Informado", "01/01/1980");
@@ -64,18 +71,6 @@ public abstract class Profissional extends Pessoa {
         }
 
         return false;
-    }
-
-    public String getEspecialidade() {
-        return especialidade;
-    }
-
-    public String getRegistroProfissional() {
-        return registroProfissional;
-    }
-
-    public double getValorConsulta() {
-        return valorConsulta;
     }
 
     public static boolean especialidadeValida(String esp) {

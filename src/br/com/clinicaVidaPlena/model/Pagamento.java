@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model;
+
 public abstract class Pagamento implements Exportavel {
 
     public int indiceConsulta;

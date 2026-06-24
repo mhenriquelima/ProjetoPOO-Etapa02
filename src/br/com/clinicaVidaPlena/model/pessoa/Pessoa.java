@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model.pessoa;
+
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -69,7 +71,7 @@ public abstract class Pessoa {
         try {
             this.dataNascimento = LocalDate.parse(dataNascimento, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         } catch (Exception e) {
-            throw new IllegalArgumentException("Formato de data inválido. Use dd/MM/yyyy.");
+            throw new IllegalArgumentException("Formato de data inválido. Use dd/MM/aaaa.");
         }
     }
 }

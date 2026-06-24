@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,10 +27,6 @@ public class Convenio {
         return nome;
     }
 
-    public void setNome(String nome) {
-        this.nome = validarNome(nome);
-    }
-}
     public double getPercentualCobertura() {
         return percentualCobertura;
     }

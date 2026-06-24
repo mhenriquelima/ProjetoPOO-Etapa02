@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model.pessoa;
+
 public class Nutricionista extends Profissional {
 
     private int totalDietas;

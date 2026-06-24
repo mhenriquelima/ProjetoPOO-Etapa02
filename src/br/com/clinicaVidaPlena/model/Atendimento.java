@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model;
+
 public class Atendimento {
     public int indiceConsulta;
     // COMPOSIÇÃO (R8)

@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model.pessoa;
+
 // classe psicologo herda da classe abstrata profissional
 public class Psicologo extends Profissional {
 

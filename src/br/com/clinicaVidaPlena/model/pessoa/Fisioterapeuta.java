@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model.pessoa;
+
 // classe fisioterapeuta herda da classe abstrata profissional
 public class Fisioterapeuta extends Profissional {
     private int totalSessoesPrevistas;

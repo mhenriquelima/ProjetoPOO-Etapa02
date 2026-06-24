@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model;
+
 import java.util.Objects;
 
 public class HorarioDisponivel {

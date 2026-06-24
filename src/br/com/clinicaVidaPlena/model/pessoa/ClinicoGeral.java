@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model.pessoa;
+
 public class ClinicoGeral extends Profissional {
 
     private int totalConsultas;

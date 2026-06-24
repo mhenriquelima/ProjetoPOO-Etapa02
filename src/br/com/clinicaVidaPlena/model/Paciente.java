@@ -1,3 +1,7 @@
+package br.com.clinicaVidaPlena.model;
+
+import br.com.clinicaVidaPlena.model.pessoa.Pessoa;
+
 public class Paciente extends Pessoa {
     public int idade;
     public String telefone;
@@ -6,7 +10,7 @@ public class Paciente extends Pessoa {
     public boolean ativo;
 
     public Paciente(String nome, String cpf) {
-        super(nome, cpf, "Não Informado", "01/01/2000");
+        super(nome, cpf, "Não Informado", "01/01/2000"); 
         this.idade = 0;
         this.telefone = "";
         this.convenio = null;
@@ -23,6 +27,7 @@ public class Paciente extends Pessoa {
 
     // construtor com todos os dados
     public Paciente(String nome, String cpf, int idade, String telefone, Convenio convenio) {
+        super(nome, cpf, telefone, "01/01/2000");
         this.nome = nome;
         this.cpf = cpf;
         this.idade = idade;
@@ -36,38 +41,14 @@ public class Paciente extends Pessoa {
         setTelefone(telefone);
     }
 
-    public void complementar(int idade, String telefone, Convenio convenio) {
+    public void complementar(int idade, String telefone, Convenio convenioNome) {
         this.idade = idade;
         setTelefone(telefone);
-        this.convenio = convenio;
+        this.convenio = convenioNome;
     }
 
     public void desativar() {
         this.ativo = false;
-    }
-
-    public int getIdade() {
-        return idade;
-    }
-
-    public void setIdade(int idade) {
-        this.idade = idade;
-    }
-
-    public String getConvenio() {
-        return convenio == null ? "" : convenio.getNome();
-    }
-
-    public void setConvenio(Convenio convenio) {
-        this.convenio = convenio;
-    }
-
-    public boolean hasConvenio() {
-        return convenio != null && !convenio.getNome().trim().isEmpty();
-    }
-
-    public boolean isAtivo() {
-        return ativo;
     }
 
     @Override
