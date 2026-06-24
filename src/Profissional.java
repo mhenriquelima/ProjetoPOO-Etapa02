@@ -1,17 +1,12 @@
-import java.util.ArrayList;
-import java.util.List;
-
-public class Profissional {
-    public String nome;
+public abstract class Profissional extends Pessoa {
     public String especialidade;
     public String registroProfissional;
     public double valorConsulta;
     // AGREGAÇÃO (R8)
     private List<HorarioDisponivel> horariosDisponiveis;    
 
-    // so nome e especialidade
     public Profissional(String nome, String especialidade) {
-        this.nome = nome;
+        super(nome, "00000000000", "Não Informado", "01/01/1980");
         this.especialidade = especialidade;
         this.registroProfissional = "";
         this.valorConsulta = 0;
@@ -19,17 +14,15 @@ public class Profissional {
     }
 
     public Profissional(String nome, String especialidade, String registroProfissional, double valorConsulta) {
-        this.nome = nome;
+        super(nome, "00000000000", "Não Informado", "01/01/1980");
         this.especialidade = especialidade;
         this.registroProfissional = registroProfissional;
         this.valorConsulta = valorConsulta;
         this.horariosDisponiveis = new ArrayList<>();
     }
 
-    // construtor completo com dias
-    public Profissional(String nome, String especialidade, String registroProfissional,
-                        double valorConsulta, String[] dias, int totalDias) {
-        this.nome = nome;
+    public Profissional(String nome, String especialidade, String registroProfissional, double valorConsulta, String[] dias, int totalDias) {
+        super(nome, "00000000000", "Não Informado", "01/01/1980");
         this.especialidade = especialidade;
         this.registroProfissional = registroProfissional;
         this.valorConsulta = valorConsulta;
@@ -39,6 +32,12 @@ public class Profissional {
             );
         }
     }
+
+    protected boolean validarRegistro() {
+        return this.registroProfissional != null && !this.registroProfissional.trim().isEmpty();
+    }
+
+    public abstract void registrarEspecifico(Object atendimento);
 
     public void atualizar(String registro, double valor) {
         this.registroProfissional = registro;
@@ -55,7 +54,6 @@ public class Profissional {
         }
     }
 
-    // verifica se o profissional atende naquele dia
     public boolean atendeNoDia(String dia) {
 
         for (HorarioDisponivel h : horariosDisponiveis) {
@@ -68,7 +66,6 @@ public class Profissional {
         return false;
     }
 
-    // valida as especialidades aceitas pela clinica
     public static boolean especialidadeValida(String esp) {
         if (esp.equals("clinica geral")) return true;
         if (esp.equals("fisioterapia")) return true;
@@ -77,6 +74,7 @@ public class Profissional {
         return false;
     }
 
+    @Override
     public String exibirResumo() {
         String dias = "";
     for (int i = 0; i < horariosDisponiveis.size(); i++) {

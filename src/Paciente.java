@@ -1,6 +1,4 @@
-public class Paciente {
-    public String nome;
-    public String cpf;
+public class Paciente extends Pessoa {
     public int idade;
     public String telefone;
     // ASSOCIAÇÃO (R8)
@@ -8,8 +6,7 @@ public class Paciente {
     public boolean ativo;
 
     public Paciente(String nome, String cpf) {
-        this.nome = nome;
-        this.cpf = cpf;
+        super(nome, cpf, "Não Informado", "01/01/2000"); 
         this.idade = 0;
         this.telefone = "";
         this.convenio = null;
@@ -17,8 +14,7 @@ public class Paciente {
     }
 
     public Paciente(String nome, String cpf, int idade, String telefone) {
-        this.nome = nome;
-        this.cpf = cpf;
+        super(nome, cpf, telefone, "01/01/2000");
         this.idade = idade;
         this.telefone = telefone;
         this.convenio = null;
@@ -35,23 +31,22 @@ public class Paciente {
         this.ativo = true;
     }
 
-    // atualiza so idade e telefone
     public void complementar(int idade, String telefone) {
         this.idade = idade;
-        this.telefone = telefone;
+        setTelefone(telefone);
     }
 
-    // atualiza tudo incluindo convenio
-    public void complementar(int idade, String telefone, Convenio convenio) {
+    public void complementar(int idade, String telefone, String convenioNome) {
         this.idade = idade;
-        this.telefone = telefone;
-        this.convenio = convenio;
+        setTelefone(telefone);
+        this.convenioNome = convenioNome;
     }
 
     public void desativar() {
         this.ativo = false;
     }
 
+    @Override
     public String exibirResumo() {
         String status = "Sim";
         if (!ativo) {
