@@ -106,7 +106,8 @@ public class Main {
             String tel = sc.nextLine();
             System.out.print("Convenio: ");
             String conv = sc.nextLine();
-            pacientes[totalPacientes] = new Paciente(nome, cpf, idade, tel, conv);
+            Convenio convenio = new Convenio(conv, /* percentual */);
+            pacientes[totalPacientes] = new Paciente(nome, cpf, idade, tel, convenio);
         }
         totalPacientes++;
         System.out.println("Paciente cadastrado com sucesso!");
@@ -134,7 +135,8 @@ public class Main {
         } else {
             System.out.print("Convenio: ");
             String conv = sc.nextLine();
-            pacientes[idx].complementar(idade, tel, conv);
+            Convenio convenio = new Convenio(nomeConvenio, /* percentual */);
+            pacientes[idx].complementar(idade, tel, convenio);
         }
         System.out.println("Cadastro atualizado!");
     }
@@ -866,7 +868,7 @@ public class Main {
         String cpfPac = consultas[idxConsulta].cpfPaciente;
         int idxPac = buscarIndicePaciente(cpfPac);
 
-        boolean temConvenio = !pacientes[idxPac].convenioNome.equals("");
+        boolean temConvenio = pacientes[idxPac].convenio != null;
         boolean ehRetorno = consultas[idxConsulta].tipo.equals("retorno");
 
         double desconto = 0;
