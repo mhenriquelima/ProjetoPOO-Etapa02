@@ -210,6 +210,13 @@ public class Main {
         if (esp.equals("psicologia")) {
             return new Psicologo(nome);
         }
+        if (esp.equals("nutricao")) {
+            return new Nutricionista(nome);
+        }
+
+        if (esp.equals("clinica geral")) {
+            return new ClinicoGeral(nome);
+        }
         return null;
     }
 
@@ -220,6 +227,13 @@ public class Main {
 
         if (esp.equals("psicologia")) {
             return new Psicologo(nome, registro, valor);
+        }
+        if (esp.equals("nutricao")) {
+            return new Nutricionista(nome, registro, valor);
+        }
+
+        if (esp.equals("clinica geral")) {
+            return new ClinicoGeral(nome, registro, valor);
         }
 
         return null;
@@ -232,6 +246,13 @@ public class Main {
 
         if (esp.equals("psicologia")) {
             return new Psicologo(nome, registro, valor, dias, totalDias);
+        }
+        if (esp.equals("nutricao")) {
+            return new Nutricionista(nome, registro, valor, dias, totalDias);
+        }
+
+        if (esp.equals("clinica geral")) {
+            return new ClinicoGeral(nome, registro, valor, dias, totalDias);
         }
 
         return null;
