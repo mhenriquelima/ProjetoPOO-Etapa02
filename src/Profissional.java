@@ -1,9 +1,9 @@
 public abstract class Profissional extends Pessoa {
-    public String especialidade;
-    public String registroProfissional;
-    public double valorConsulta;
-    // AGREGAÇÃO (R8)
-    private List<HorarioDisponivel> horariosDisponiveis;    
+    private String especialidade;
+    private String registroProfissional;
+    private double valorConsulta;
+    public String[] diasDisponiveis;
+    public int totalDias;
 
     public Profissional(String nome, String especialidade) {
         super(nome, "00000000000", "Não Informado", "01/01/1980");
@@ -64,6 +64,18 @@ public abstract class Profissional extends Pessoa {
         }
 
         return false;
+    }
+
+    public String getEspecialidade() {
+        return especialidade;
+    }
+
+    public String getRegistroProfissional() {
+        return registroProfissional;
+    }
+
+    public double getValorConsulta() {
+        return valorConsulta;
     }
 
     public static boolean especialidadeValida(String esp) {

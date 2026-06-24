@@ -69,7 +69,7 @@ public abstract class Pessoa {
         try {
             this.dataNascimento = LocalDate.parse(dataNascimento, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         } catch (Exception e) {
-            throw new IllegalArgumentException("Formato de data inválido. Use dd/MM/aaaa.");
+            throw new IllegalArgumentException("Formato de data inválido. Use dd/MM/yyyy.");
         }
     }
 }
