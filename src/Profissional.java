@@ -1,7 +1,7 @@
 public abstract class Profissional extends Pessoa {
-    public String especialidade;
-    public String registroProfissional;
-    public double valorConsulta;
+    private String especialidade;
+    private String registroProfissional;
+    private double valorConsulta;
     public String[] diasDisponiveis;
     public int totalDias;
 
@@ -62,6 +62,18 @@ public abstract class Profissional extends Pessoa {
             }
         }
         return false;
+    }
+
+    public String getEspecialidade() {
+        return especialidade;
+    }
+
+    public String getRegistroProfissional() {
+        return registroProfissional;
+    }
+
+    public double getValorConsulta() {
+        return valorConsulta;
     }
 
     public static boolean especialidadeValida(String esp) {
