@@ -1,15 +1,24 @@
-public class Convenio {
-    private String nome;
+import java.util.ArrayList;
+import java.util.List;
 
-    public Convenio(String nome) {
-        this.nome = validarNome(nome);
+public class Convenio {
+
+    private String nome;
+    private double percentualCobertura;
+    private List<String> especialidadesCobertas;
+
+    public Convenio(String nome, double percentualCobertura) {
+        this.nome = nome;
+        this.percentualCobertura = percentualCobertura;
+        this.especialidadesCobertas = new ArrayList<>();
     }
 
-    private String validarNome(String nome) {
-        if (nome == null) {
-            return "";
-        }
-        return nome.trim();
+    public void adicionarEspecialidade(String especialidade) {
+        especialidadesCobertas.add(especialidade);
+    }
+
+    public boolean cobreEspecialidade(String especialidade) {
+        return especialidadesCobertas.contains(especialidade);
     }
 
     public String getNome() {
@@ -18,5 +27,9 @@ public class Convenio {
 
     public void setNome(String nome) {
         this.nome = validarNome(nome);
+    }
+}
+    public double getPercentualCobertura() {
+        return percentualCobertura;
     }
 }

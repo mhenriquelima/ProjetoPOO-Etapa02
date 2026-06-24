@@ -10,8 +10,7 @@ public abstract class Profissional extends Pessoa {
         this.especialidade = especialidade;
         this.registroProfissional = "";
         this.valorConsulta = 0;
-        this.diasDisponiveis = new String[7];
-        this.totalDias = 0;
+        this.horariosDisponiveis = new ArrayList<>();
     }
 
     public Profissional(String nome, String especialidade, String registroProfissional, double valorConsulta) {
@@ -19,8 +18,7 @@ public abstract class Profissional extends Pessoa {
         this.especialidade = especialidade;
         this.registroProfissional = registroProfissional;
         this.valorConsulta = valorConsulta;
-        this.diasDisponiveis = new String[7];
-        this.totalDias = 0;
+        this.horariosDisponiveis = new ArrayList<>();
     }
 
     public Profissional(String nome, String especialidade, String registroProfissional, double valorConsulta, String[] dias, int totalDias) {
@@ -28,10 +26,10 @@ public abstract class Profissional extends Pessoa {
         this.especialidade = especialidade;
         this.registroProfissional = registroProfissional;
         this.valorConsulta = valorConsulta;
-        this.diasDisponiveis = new String[7];
-        this.totalDias = totalDias;
+        this.horariosDisponiveis = new ArrayList<>();
         for (int i = 0; i < totalDias; i++) {
-            this.diasDisponiveis[i] = dias[i];
+            horariosDisponiveis.add(new HorarioDisponivel(dias[i], "manha")
+            );
         }
     }
 
@@ -49,18 +47,22 @@ public abstract class Profissional extends Pessoa {
     public void atualizar(String registro, double valor, String[] dias, int totalDias) {
         this.registroProfissional = registro;
         this.valorConsulta = valor;
-        this.totalDias = totalDias;
+        this.horariosDisponiveis = new ArrayList<>();
         for (int i = 0; i < totalDias; i++) {
-            this.diasDisponiveis[i] = dias[i];
+            horariosDisponiveis.add(new HorarioDisponivel(dias[i], "manha")
+            );
         }
     }
 
     public boolean atendeNoDia(String dia) {
-        for (int i = 0; i < totalDias; i++) {
-            if (diasDisponiveis[i].equals(dia)) {
+
+        for (HorarioDisponivel h : horariosDisponiveis) {
+
+            if (h.getDiaDaSemana().equals(dia)) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -87,11 +89,24 @@ public abstract class Profissional extends Pessoa {
     @Override
     public String exibirResumo() {
         String dias = "";
-        for (int i = 0; i < totalDias; i++) {
-            if (i > 0) dias = dias + ", ";
-            dias = dias + diasDisponiveis[i];
-        }
-        return "Nome: " + this.nome + " | Espec: " + especialidade + " | Reg: " + registroProfissional
+    for (int i = 0; i < horariosDisponiveis.size(); i++) {
+        if (i > 0) dias += ", ";
+        dias += horariosDisponiveis.get(i).getDiaDaSemana();
+    }
+        return "Nome: " + nome + " | Espec: " + especialidade + " | Reg: " + registroProfissional
                 + " | Valor: R$" + valorConsulta + " | Dias: " + dias;
+    }
+
+    public void adicionarHorario(HorarioDisponivel horario) {
+    horariosDisponiveis.add(horario);
+    }
+
+    public void removerHorario(HorarioDisponivel horario) {
+        horariosDisponiveis.remove(horario);
+    }
+
+    public static void reatribuirHorario(Profissional origem, Profissional destino, HorarioDisponivel horario) {
+        origem.removerHorario(horario);
+        destino.adicionarHorario(horario);
     }
 }

@@ -109,7 +109,8 @@ public class Main {
             String tel = sc.nextLine();
             System.out.print("Convenio: ");
             String conv = sc.nextLine();
-            pacientes[totalPacientes] = new Paciente(nome, cpf, idade, tel, conv);
+            Convenio convenio = new Convenio(conv, /* percentual */);
+            pacientes[totalPacientes] = new Paciente(nome, cpf, idade, tel, convenio);
         }
         totalPacientes++;
         cpfs.add(cpf);
@@ -138,6 +139,7 @@ public class Main {
         } else {
             System.out.print("Convenio: ");
             String conv = sc.nextLine();
+            Convenio convenio = new Convenio(nomeConvenio, /* percentual */);
             pacientes[idx].complementar(idade, tel, new Convenio(conv));
         }
         System.out.println("Cadastro atualizado!");
@@ -208,6 +210,60 @@ public class Main {
             }
         }
     }
+    public static Profissional criarProfissionalPorEspecialidade(String nome, String esp) {
+        if (esp.equals("fisioterapia")) {
+            return new Fisioterapeuta(nome);
+        }
+        if (esp.equals("psicologia")) {
+            return new Psicologo(nome);
+        }
+        if (esp.equals("nutricao")) {
+            return new Nutricionista(nome);
+        }
+
+        if (esp.equals("clinica geral")) {
+            return new ClinicoGeral(nome);
+        }
+        return null;
+    }
+
+    public static Profissional criarProfissionalPorEspecialidade(String nome, String esp, String registro, double valor) {
+        if (esp.equals("fisioterapia")) {
+            return new Fisioterapeuta(nome, registro, valor);
+        }
+
+        if (esp.equals("psicologia")) {
+            return new Psicologo(nome, registro, valor);
+        }
+        if (esp.equals("nutricao")) {
+            return new Nutricionista(nome, registro, valor);
+        }
+
+        if (esp.equals("clinica geral")) {
+            return new ClinicoGeral(nome, registro, valor);
+        }
+
+        return null;
+        }
+
+    public static Profissional criarProfissionalPorEspecialidade(String nome, String esp, String registro, double valor, String[] dias, int totalDias) {
+        if (esp.equals("fisioterapia")) {
+            return new Fisioterapeuta(nome, registro, valor, dias, totalDias);
+        }
+
+        if (esp.equals("psicologia")) {
+            return new Psicologo(nome, registro, valor, dias, totalDias);
+        }
+        if (esp.equals("nutricao")) {
+            return new Nutricionista(nome, registro, valor, dias, totalDias);
+        }
+
+        if (esp.equals("clinica geral")) {
+            return new ClinicoGeral(nome, registro, valor, dias, totalDias);
+        }
+
+        return null;
+    }
 
     public static void cadastrarProfissional() {
         System.out.print("Nome: ");
@@ -224,13 +280,20 @@ public class Main {
         int tipo = Integer.parseInt(sc.nextLine());
 
         if (tipo == 1) {
-            profissionais[totalProfissionais] = new Profissional(nome, esp);
+            profissionais[totalProfissionais] = criarProfissionalPorEspecialidade(nome, esp);
+            if (profissionais[totalProfissionais] == null) {
+                return;
+            }
         } else if (tipo == 2) {
             System.out.print("Registro: ");
             String reg = sc.nextLine();
             System.out.print("Valor consulta: ");
             double valor = Double.parseDouble(sc.nextLine());
-            profissionais[totalProfissionais] = new Profissional(nome, esp, reg, valor);
+            profissionais[totalProfissionais] = criarProfissionalPorEspecialidade(nome, esp, reg, valor);
+            if (profissionais[totalProfissionais] == null) {
+                System.out.println("Especialidade ainda nao implementada.");
+                return;
+            }
         } else {
             System.out.print("Registro: ");
             String reg = sc.nextLine();
@@ -243,7 +306,11 @@ public class Main {
                 System.out.print("Dia " + (i+1) + ": ");
                 dias[i] = sc.nextLine();
             }
-            profissionais[totalProfissionais] = new Profissional(nome, esp, reg, valor, dias, qtd);
+            profissionais[totalProfissionais] = criarProfissionalPorEspecialidade(nome, esp, reg, valor, dias, qtd);
+            if (profissionais[totalProfissionais] == null) {
+                System.out.println("Especialidade ainda nao implementada.");
+                return;
+            }
         }
         totalProfissionais++;
         System.out.println("Profissional cadastrado!");
@@ -806,7 +873,7 @@ public class Main {
         String cpfPac = consultas[idxConsulta].cpfPaciente;
         int idxPac = buscarIndicePaciente(cpfPac);
 
-        boolean temConvenio = pacientes[idxPac].hasConvenio();
+        boolean temConvenio = pacientes[idxPac].convenio != null;
         boolean ehRetorno = consultas[idxConsulta].tipo.equals("retorno");
 
         double desconto = 0;
