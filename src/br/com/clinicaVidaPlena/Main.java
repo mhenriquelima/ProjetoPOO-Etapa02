@@ -1,6 +1,8 @@
 package br.com.clinicaVidaPlena;
 
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.clinicaVidaPlena.model.Atendimento;
 import br.com.clinicaVidaPlena.model.Consulta;
@@ -35,6 +37,8 @@ public class Main {
 
     static double[] multas = new double[100];
     static int totalMultas = 0;
+
+    static List<Pessoa> pessoas = new ArrayList<Pessoa>();
 
     static Scanner sc = new Scanner(System.in);
 
@@ -126,6 +130,7 @@ public class Main {
             Convenio convenio = new Convenio(conv, /* percentual */);
             pacientes[totalPacientes] = new Paciente(nome, cpf, idade, tel, convenio);
         }
+        pessoas.add(pacientes[totalPacientes]);
         totalPacientes++;
         System.out.println("Paciente cadastrado com sucesso!");
     }
@@ -324,6 +329,7 @@ public class Main {
                 return;
             }
         }
+        pessoas.add(profissionais[totalProfissionais]);
         totalProfissionais++;
         System.out.println("Profissional cadastrado!");
     }
@@ -805,7 +811,12 @@ public class Main {
             }
             atendimentos[totalAtendimentos] = new Atendimento(idxConsulta, obs, diag, procs, qtdProcs);
         }
-
+        String nomeProfissional = consultas[idxConsulta].nomeProfissional;
+        int idxProf = buscarIndiceProfissional(nomeProfissional);
+        
+        if (idxProf != -1 && profissionais[idxProf] instanceof Psicologo) {
+            profissionais[idxProf].registrarEspecifico(atendimentos[totalAtendimentos]);
+        }
         consultas[idxConsulta].realizar();
         totalAtendimentos++;
         System.out.println("\n--- RESUMO ---");
@@ -888,7 +899,7 @@ public class Main {
         System.out.println("Pagamento registrado!");
         System.out.println(pagamento.exibirResumo());
 
-    } catch (PagamentoInvalidoException e) {
+        } catch (PagamentoInvalidoException e) {
         System.out.println(
                 "Erro ao registrar pagamento: "
                         + e.getMessage()
@@ -1052,6 +1063,48 @@ public class Main {
         }
     }
 
+    public static void relatorioUnificadoPessoas() {
+        System.out.println("\nRELATORIO UNIFICADO DE PESSOAS");
+
+        if (pessoas.isEmpty()) {
+            System.out.println("Nenhuma pessoa cadastrada.");
+            return;
+        }
+
+        int totalPacientesRelatorio = 0;
+        int totalProfissionaisRelatorio = 0;
+
+        for (Pessoa pessoa : pessoas) {
+            // LIGAÇÃO DINÂMICA: o método chamado depende do tipo real do objeto
+            System.out.println(pessoa.exibirResumo());
+
+            if (pessoa instanceof Paciente) {
+                totalPacientesRelatorio++;
+            }
+
+            if (pessoa instanceof Profissional) {
+                totalProfissionaisRelatorio++;
+
+                Profissional prof = (Profissional) pessoa;
+
+                if (prof instanceof Fisioterapeuta) {
+                    System.out.println("Tipo real: Fisioterapeuta");
+                } else if (prof instanceof Psicologo) {
+                    System.out.println("Tipo real: Psicologo");
+                } else if (prof instanceof Nutricionista) {
+                    System.out.println("Tipo real: Nutricionista");
+                } else if (prof instanceof ClinicoGeral) {
+                    System.out.println("Tipo real: Clinico Geral");
+                }
+            }
+
+            System.out.println("---");
+        }
+
+        System.out.println("Total de pacientes: " + totalPacientesRelatorio);
+        System.out.println("Total de profissionais: " + totalProfissionaisRelatorio);
+    }
+
     // ---- RELATORIOS ----
 
     public static void menuRelatorios() {
@@ -1062,6 +1115,7 @@ public class Main {
             System.out.println("2 - Por profissional");
             System.out.println("3 - Por periodo");
             System.out.println("4 - Resumo financeiro");
+            System.out.println("5 - Relatorio unificado de pessoas");
             System.out.println("0 - Voltar");
             System.out.print("Opcao: ");
             op = Integer.parseInt(sc.nextLine());
@@ -1084,6 +1138,9 @@ public class Main {
                     break;
                 case 4:
                     Relatorio.gerarResumoFinanceiro(consultas, totalConsultas, pagamentos, totalPagamentos, multas, totalMultas);
+                    break;
+                case 5:
+                    relatorioUnificadoPessoas();
                     break;
                 case 0: break;
                 default: System.out.println("Opcao invalida!"); break;
