@@ -1,4 +1,21 @@
+package br.com.clinicaVidaPlena;
+
 import java.util.Scanner;
+
+import br.com.clinicaVidaPlena.model.Atendimento;
+import br.com.clinicaVidaPlena.model.Consulta;
+import br.com.clinicaVidaPlena.model.Convenio;
+import br.com.clinicaVidaPlena.model.HorarioDisponivel;
+import br.com.clinicaVidaPlena.model.Paciente;
+import br.com.clinicaVidaPlena.model.Pagamento;
+import br.com.clinicaVidaPlena.model.Prontuario;
+import br.com.clinicaVidaPlena.model.Relatorio;
+import br.com.clinicaVidaPlena.model.pessoa.ClinicoGeral;
+import br.com.clinicaVidaPlena.model.pessoa.Fisioterapeuta;
+import br.com.clinicaVidaPlena.model.pessoa.Nutricionista;
+import br.com.clinicaVidaPlena.model.pessoa.Pessoa;
+import br.com.clinicaVidaPlena.model.pessoa.Profissional;
+import br.com.clinicaVidaPlena.model.pessoa.Psicologo;
 
 public class Main {
     static Paciente[] pacientes = new Paciente[100];
@@ -106,7 +123,8 @@ public class Main {
             String tel = sc.nextLine();
             System.out.print("Convenio: ");
             String conv = sc.nextLine();
-            pacientes[totalPacientes] = new Paciente(nome, cpf, idade, tel, conv);
+            Convenio convenio = new Convenio(conv, /* percentual */);
+            pacientes[totalPacientes] = new Paciente(nome, cpf, idade, tel, convenio);
         }
         totalPacientes++;
         System.out.println("Paciente cadastrado com sucesso!");
@@ -134,7 +152,8 @@ public class Main {
         } else {
             System.out.print("Convenio: ");
             String conv = sc.nextLine();
-            pacientes[idx].complementar(idade, tel, conv);
+            Convenio convenio = new Convenio(nomeConvenio, /* percentual */);
+            pacientes[idx].complementar(idade, tel, convenio);
         }
         System.out.println("Cadastro atualizado!");
     }
@@ -203,6 +222,60 @@ public class Main {
             }
         }
     }
+    public static Profissional criarProfissionalPorEspecialidade(String nome, String esp) {
+        if (esp.equals("fisioterapia")) {
+            return new Fisioterapeuta(nome);
+        }
+        if (esp.equals("psicologia")) {
+            return new Psicologo(nome);
+        }
+        if (esp.equals("nutricao")) {
+            return new Nutricionista(nome);
+        }
+
+        if (esp.equals("clinica geral")) {
+            return new ClinicoGeral(nome);
+        }
+        return null;
+    }
+
+    public static Profissional criarProfissionalPorEspecialidade(String nome, String esp, String registro, double valor) {
+        if (esp.equals("fisioterapia")) {
+            return new Fisioterapeuta(nome, registro, valor);
+        }
+
+        if (esp.equals("psicologia")) {
+            return new Psicologo(nome, registro, valor);
+        }
+        if (esp.equals("nutricao")) {
+            return new Nutricionista(nome, registro, valor);
+        }
+
+        if (esp.equals("clinica geral")) {
+            return new ClinicoGeral(nome, registro, valor);
+        }
+
+        return null;
+        }
+
+    public static Profissional criarProfissionalPorEspecialidade(String nome, String esp, String registro, double valor, String[] dias, int totalDias) {
+        if (esp.equals("fisioterapia")) {
+            return new Fisioterapeuta(nome, registro, valor, dias, totalDias);
+        }
+
+        if (esp.equals("psicologia")) {
+            return new Psicologo(nome, registro, valor, dias, totalDias);
+        }
+        if (esp.equals("nutricao")) {
+            return new Nutricionista(nome, registro, valor, dias, totalDias);
+        }
+
+        if (esp.equals("clinica geral")) {
+            return new ClinicoGeral(nome, registro, valor, dias, totalDias);
+        }
+
+        return null;
+    }
 
     public static void cadastrarProfissional() {
         System.out.print("Nome: ");
@@ -219,13 +292,20 @@ public class Main {
         int tipo = Integer.parseInt(sc.nextLine());
 
         if (tipo == 1) {
-            profissionais[totalProfissionais] = new Profissional(nome, esp);
+            profissionais[totalProfissionais] = criarProfissionalPorEspecialidade(nome, esp);
+            if (profissionais[totalProfissionais] == null) {
+                return;
+            }
         } else if (tipo == 2) {
             System.out.print("Registro: ");
             String reg = sc.nextLine();
             System.out.print("Valor consulta: ");
             double valor = Double.parseDouble(sc.nextLine());
-            profissionais[totalProfissionais] = new Profissional(nome, esp, reg, valor);
+            profissionais[totalProfissionais] = criarProfissionalPorEspecialidade(nome, esp, reg, valor);
+            if (profissionais[totalProfissionais] == null) {
+                System.out.println("Especialidade ainda nao implementada.");
+                return;
+            }
         } else {
             System.out.print("Registro: ");
             String reg = sc.nextLine();
@@ -238,7 +318,11 @@ public class Main {
                 System.out.print("Dia " + (i+1) + ": ");
                 dias[i] = sc.nextLine();
             }
-            profissionais[totalProfissionais] = new Profissional(nome, esp, reg, valor, dias, qtd);
+            profissionais[totalProfissionais] = criarProfissionalPorEspecialidade(nome, esp, reg, valor, dias, qtd);
+            if (profissionais[totalProfissionais] == null) {
+                System.out.println("Especialidade ainda nao implementada.");
+                return;
+            }
         }
         totalProfissionais++;
         System.out.println("Profissional cadastrado!");
@@ -893,7 +977,58 @@ public class Main {
             return;
         }
 
-        pagamentos[totalPagamentos] = pagamento;
+        // obtem valor do profissional
+        String nomeProf = consultas[idxConsulta].nomeProfissional;
+        int idxProf = buscarIndiceProfissional(nomeProf);
+        double valorBase = profissionais[idxProf].valorConsulta;
+
+        // verifica convenio e tipo
+        String cpfPac = consultas[idxConsulta].cpfPaciente;
+        int idxPac = buscarIndicePaciente(cpfPac);
+
+        boolean temConvenio = pacientes[idxPac].convenio != null;
+        boolean ehRetorno = consultas[idxConsulta].tipo.equals("retorno");
+
+        double desconto = 0;
+        if (ehRetorno) desconto = desconto + 20;
+        if (temConvenio) desconto = desconto + 40;
+
+        System.out.print("Tem multa pendente? (1-Nao / 2-Sim): ");
+        int temMulta = Integer.parseInt(sc.nextLine());
+        double valorMulta = 0;
+
+        double valorFinal;
+        if (temMulta == 1 && desconto == 0) {
+            valorFinal = Pagamento.calcularValor(valorBase);
+        } else if (temMulta == 1) {
+            valorFinal = Pagamento.calcularValor(valorBase, desconto);
+        } else {
+            System.out.print("Valor da multa: ");
+            valorMulta = Double.parseDouble(sc.nextLine());
+            valorFinal = Pagamento.calcularValor(valorBase, desconto, valorMulta);
+        }
+
+        // mostra detalhes
+        System.out.println("Valor base: R$" + valorBase);
+        System.out.println("Desconto: " + desconto + "%");
+        if (valorMulta > 0) System.out.println("Multa: R$" + valorMulta);
+        double vlrFinalArredondado = Math.round(valorFinal * 100.0) / 100.0;
+        System.out.println("Valor final: R$" + vlrFinalArredondado);
+
+        System.out.print("Tipo (dinheiro/cartao/convenio): ");
+        String tipoPag = sc.nextLine();
+
+        if (tipoPag.equals("cartao")) {
+            System.out.print("Parcelas (1 a 3): ");
+            int parc = Integer.parseInt(sc.nextLine());
+            if (parc < 1) parc = 1;
+            if (parc > 3) parc = 3;
+            pagamentos[totalPagamentos] = new Pagamento(idxConsulta, valorFinal, tipoPag, parc);
+            double vlrParc = Math.round((valorFinal / parc) * 100.0) / 100.0;
+            System.out.println("Pagamento em " + parc + "x de R$" + vlrParc);
+        } else {
+            pagamentos[totalPagamentos] = new Pagamento(idxConsulta, valorFinal, tipoPag);
+        }
         totalPagamentos++;
 
         System.out.println("Pagamento registrado!");

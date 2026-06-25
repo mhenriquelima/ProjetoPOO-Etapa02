@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model;
+
 public class Relatorio {
 
     // mostra todas as consultas
@@ -87,7 +89,7 @@ public class Relatorio {
     public static String buscarDiagnostico(int indiceConsulta, Atendimento[] atendimentos, int total) {
         for (int i = 0; i < total; i++) {
             if (atendimentos[i].indiceConsulta == indiceConsulta) {
-                return atendimentos[i].diagnostico;
+                return atendimentos[i].getDiagnostico();
             }
         }
         return "";
