@@ -5,15 +5,21 @@ public abstract class Pagamento implements Exportavel {
     public String tipoPagamento;
     public int parcelas;
 
-    protected Pagamento(int indiceConsulta, double valorFinal, String tipoPagamento) {
+    protected Pagamento(int indiceConsulta,
+                        double valorFinal,
+                        String tipoPagamento) {
+
         this.indiceConsulta = indiceConsulta;
         this.valorFinal = valorFinal;
         this.tipoPagamento = tipoPagamento;
         this.parcelas = 1;
     }
 
-    protected Pagamento(int indiceConsulta, double valorFinal,
-                        String tipoPagamento, int parcelas) {
+    protected Pagamento(int indiceConsulta,
+                        double valorFinal,
+                        String tipoPagamento,
+                        int parcelas) {
+
         this.indiceConsulta = indiceConsulta;
         this.valorFinal = valorFinal;
         this.tipoPagamento = tipoPagamento;
@@ -21,6 +27,17 @@ public abstract class Pagamento implements Exportavel {
     }
 
     public abstract double calcularValorFinal();
+
+    @Override
+    public String exportar() {
+        double valorArredondado =
+                Math.round(valorFinal * 100.0) / 100.0;
+
+        return indiceConsulta + ";"
+                + tipoPagamento + ";"
+                + valorArredondado + ";"
+                + parcelas;
+    }
 
     public String exibirResumo() {
         double valorArredondado =
