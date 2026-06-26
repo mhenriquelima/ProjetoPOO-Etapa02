@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.Exceptions;
+
 public class EspecialidadeInvalidaException extends Exception {
     public EspecialidadeInvalidaException() {
         super();

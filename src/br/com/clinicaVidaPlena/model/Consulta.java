@@ -1,6 +1,6 @@
 package br.com.clinicaVidaPlena.model;
 
-public class Consulta {
+public class Consulta implements Agendavel {
     public String cpfPaciente;
     public String nomeProfissional;
     public String data;

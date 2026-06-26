@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.Exceptions;
+
 public class ConsultaJaRealizadaException extends Exception {
     public ConsultaJaRealizadaException() {
         super();

@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.Exceptions;
+
 public class PacienteNaoEncontradoException extends Exception {
     public PacienteNaoEncontradoException() {
         super();
