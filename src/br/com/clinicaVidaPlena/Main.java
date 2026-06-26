@@ -1,6 +1,8 @@
 package br.com.clinicaVidaPlena;
 
 import java.util.Scanner;
+import java.util.ArrayList;
+import java.util.List;
 
 import br.com.clinicaVidaPlena.model.Atendimento;
 import br.com.clinicaVidaPlena.model.Consulta;
@@ -30,8 +32,8 @@ public class Main {
     static Atendimento[] atendimentos = new Atendimento[200];
     static int totalAtendimentos = 0;
 
-    static Pagamento[] pagamentos = new Pagamento[200];
-    static int totalPagamentos = 0;
+    static List<Pagamento> pagamentos =
+        new ArrayList<>();
 
     static double[] multas = new double[100];
     static int totalMultas = 0;
@@ -882,8 +884,14 @@ public class Main {
             return;
         }
 
-        pagamentos[totalPagamentos] = pagamento;
-        totalPagamentos++;
+        Pagamento pagamento =
+            new PagamentoCartao(
+                    idxConsulta,
+                    valorBase,
+                    parcelas
+            );
+
+        adicionarPagamento(pagamento);
 
         System.out.println("Pagamento registrado!");
         System.out.println(pagamento.exibirResumo());
@@ -898,28 +906,51 @@ public class Main {
 
     public static void pagamentoAutomatico() {
     System.out.print("Indice da consulta: ");
-    int idxConsulta = Integer.parseInt(sc.nextLine());
+    int idxConsulta =
+            Integer.parseInt(sc.nextLine());
 
-    if (idxConsulta < 0 || idxConsulta >= totalConsultas) {
+    if (idxConsulta < 0
+            || idxConsulta >= totalConsultas) {
+
         System.out.println("Indice invalido.");
         return;
     }
 
-    String nomeProfissional =
-            consultas[idxConsulta].nomeProfissional;
+    Consulta consulta =
+            consultas[idxConsulta];
 
     int idxProfissional =
-            buscarIndiceProfissional(nomeProfissional);
+            buscarIndiceProfissional(
+                    consulta.nomeProfissional
+            );
 
     if (idxProfissional == -1) {
         System.out.println(
-                "Profissional da consulta nao encontrado."
+                "Profissional nao encontrado."
         );
         return;
     }
 
+    int idxPaciente =
+            buscarIndicePaciente(
+                    consulta.cpfPaciente
+            );
+
+    if (idxPaciente == -1) {
+        System.out.println(
+                "Paciente nao encontrado."
+        );
+        return;
+    }
+
+    Profissional profissional =
+            profissionais[idxProfissional];
+
+    Paciente paciente =
+            pacientes[idxPaciente];
+
     double valorBase =
-            profissionais[idxProfissional].valorConsulta;
+            profissional.valorConsulta;
 
     System.out.print(
             "Tem multa pendente? (1-Nao / 2-Sim): "
@@ -936,120 +967,119 @@ public class Main {
                 Double.parseDouble(sc.nextLine());
     }
 
-    System.out.println("Valor base: R$" + valorBase);
+    System.out.println(
+            "Valor base: R$" + valorBase
+    );
 
-    if (valorMulta > 0) {
-        System.out.println("Multa: R$" + valorMulta);
-    }
+    System.out.print(
+            "Tipo (dinheiro/cartao/convenio): "
+    );
 
-    System.out.print("Tipo (dinheiro/cartao): ");
     String tipoPagamento =
-            sc.nextLine().trim().toLowerCase();
+            sc.nextLine()
+                    .trim()
+                    .toLowerCase();
 
     try {
         Pagamento pagamento;
 
-        if (tipoPagamento.equals("dinheiro")) {
+        switch (tipoPagamento) {
+            case "dinheiro":
+                pagamento =
+                        new PagamentoDinheiro(
+                                idxConsulta,
+                                valorBase,
+                                valorMulta
+                        );
+                break;
 
-            pagamento = new PagamentoDinheiro(
-                    idxConsulta,
-                    valorBase,
-                    valorMulta
-            );
+            case "cartao":
+                System.out.print(
+                        "Parcelas (1 a 6): "
+                );
 
-        } else if (tipoPagamento.equals("cartao")) {
+                int parcelas =
+                        Integer.parseInt(
+                                sc.nextLine()
+                        );
 
-            System.out.print("Parcelas (1 a 6): ");
-            int parcelas =
-                    Integer.parseInt(sc.nextLine());
+                pagamento =
+                        new PagamentoCartao(
+                                idxConsulta,
+                                valorBase,
+                                parcelas,
+                                valorMulta
+                        );
+                break;
 
-            pagamento = new PagamentoCartao(
-                    idxConsulta,
-                    valorBase,
-                    parcelas,
-                    valorMulta
-            );
+            case "convenio":
+                pagamento =
+                        new PagamentoConvenio(
+                                idxConsulta,
+                                valorBase,
+                                paciente.convenio,
+                                profissional.especialidade,
+                                valorMulta
+                        );
+                break;
 
-        } else {
-            System.out.println(
-                    "Tipo de pagamento invalido."
-            );
-            return;
+            default:
+                System.out.println(
+                        "Tipo de pagamento invalido."
+                );
+                return;
         }
 
-        // obtem valor do profissional
-        String nomeProf = consultas[idxConsulta].nomeProfissional;
-        int idxProf = buscarIndiceProfissional(nomeProf);
-        double valorBase = profissionais[idxProf].valorConsulta;
+        adicionarPagamento(pagamento);
 
-        // verifica convenio e tipo
-        String cpfPac = consultas[idxConsulta].cpfPaciente;
-        int idxPac = buscarIndicePaciente(cpfPac);
+        System.out.println(
+                "Pagamento registrado!"
+        );
 
-        boolean temConvenio = pacientes[idxPac].convenio != null;
-        boolean ehRetorno = consultas[idxConsulta].tipo.equals("retorno");
+        System.out.println(
+                pagamento.exibirResumo()
+        );
 
-        double desconto = 0;
-        if (ehRetorno) desconto = desconto + 20;
-        if (temConvenio) desconto = desconto + 40;
-
-        System.out.print("Tem multa pendente? (1-Nao / 2-Sim): ");
-        int temMulta = Integer.parseInt(sc.nextLine());
-        double valorMulta = 0;
-
-        double valorFinal;
-        if (temMulta == 1 && desconto == 0) {
-            valorFinal = Pagamento.calcularValor(valorBase);
-        } else if (temMulta == 1) {
-            valorFinal = Pagamento.calcularValor(valorBase, desconto);
-        } else {
-            System.out.print("Valor da multa: ");
-            valorMulta = Double.parseDouble(sc.nextLine());
-            valorFinal = Pagamento.calcularValor(valorBase, desconto, valorMulta);
-        }
-
-        // mostra detalhes
-        System.out.println("Valor base: R$" + valorBase);
-        System.out.println("Desconto: " + desconto + "%");
-        if (valorMulta > 0) System.out.println("Multa: R$" + valorMulta);
-        double vlrFinalArredondado = Math.round(valorFinal * 100.0) / 100.0;
-        System.out.println("Valor final: R$" + vlrFinalArredondado);
-
-        System.out.print("Tipo (dinheiro/cartao/convenio): ");
-        String tipoPag = sc.nextLine();
-
-        if (tipoPag.equals("cartao")) {
-            System.out.print("Parcelas (1 a 3): ");
-            int parc = Integer.parseInt(sc.nextLine());
-            if (parc < 1) parc = 1;
-            if (parc > 3) parc = 3;
-            pagamentos[totalPagamentos] = new Pagamento(idxConsulta, valorFinal, tipoPag, parc);
-            double vlrParc = Math.round((valorFinal / parc) * 100.0) / 100.0;
-            System.out.println("Pagamento em " + parc + "x de R$" + vlrParc);
-        } else {
-            pagamentos[totalPagamentos] = new Pagamento(idxConsulta, valorFinal, tipoPag);
-        }
-        totalPagamentos++;
-
-        System.out.println("Pagamento registrado!");
-        System.out.println(pagamento.exibirResumo());
+    } catch (ConvenioNaoCobreException e) {
+        System.out.println(e);
 
     } catch (PagamentoInvalidoException e) {
-        System.out.println(
-                "Erro ao registrar pagamento: "
-                        + e.getMessage()
-        );
+        System.out.println(e);
     }
 }
 
     public static void listarPagamentos() {
-        if (totalPagamentos == 0) {
-            System.out.println("Nenhum pagamento registrado.");
-            return;
-        }
-        for (int i = 0; i < totalPagamentos; i++) {
-            System.out.println(pagamentos[i].exibirResumo());
-        }
+    if (pagamentos.isEmpty()) {
+        System.out.println(
+                "Nenhum pagamento registrado."
+        );
+        return;
+    }
+
+    System.out.println(
+            "\n=== PAGAMENTOS REGISTRADOS ==="
+    );
+
+    for (Pagamento pagamento : pagamentos) {
+
+        // LIGACAO DINAMICA conforme R5
+        pagamento.valorFinal =
+                pagamento.calcularValorFinal();
+
+        System.out.println(
+                pagamento.exibirResumo()
+        );
+    }
+}
+
+    public static void adicionarPagamento(
+            Pagamento pagamento) {
+
+        // LIGACAO DINAMICA conforme R5
+        pagamento.valorFinal =
+                pagamento.calcularValorFinal();
+
+        pagamentos.add(pagamento);
     }
 
     // ---- RELATORIOS ----
@@ -1062,6 +1092,7 @@ public class Main {
             System.out.println("2 - Por profissional");
             System.out.println("3 - Por periodo");
             System.out.println("4 - Resumo financeiro");
+            System.out.println("5 - Relatorio de pagamentos");
             System.out.println("0 - Voltar");
             System.out.print("Opcao: ");
             op = Integer.parseInt(sc.nextLine());
@@ -1083,7 +1114,10 @@ public class Main {
                     Relatorio.gerarRelatorio(consultas, totalConsultas, atendimentos, totalAtendimentos, ini, fim);
                     break;
                 case 4:
-                    Relatorio.gerarResumoFinanceiro(consultas, totalConsultas, pagamentos, totalPagamentos, multas, totalMultas);
+                    Relatorio.gerarResumoFinanceiro(consultas, totalConsultas, pagamentos, multas, totalMultas);
+                    break;
+                case 5:
+                    Relatorio.gerarRelatorioPagamentos(pagamentos);
                     break;
                 case 0: break;
                 default: System.out.println("Opcao invalida!"); break;
