@@ -73,6 +73,33 @@ public abstract class Profissional extends Pessoa {
         return false;
     }
 
+    public boolean atendeNoHorario(String dia, String horario) {
+        for (HorarioDisponivel h : horariosDisponiveis) {
+            if (h.getDiaDaSemana().equals(dia) && horarioNoTurno(horario, h.getTurno())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean horarioNoTurno(String horario, String turno) {
+        int hora = Integer.parseInt(horario.substring(0, 2));
+
+        if (turno.equals("manha")) {
+            return hora >= 8 && hora < 12;
+        }
+
+        if (turno.equals("tarde")) {
+            return hora >= 12 && hora < 18;
+        }
+
+        if (turno.equals("noite")) {
+            return hora >= 18 && hora <= 21;
+        }
+
+        return false;
+    }
+
     public static boolean especialidadeValida(String esp) {
         if (esp.equals("clinica geral")) return true;
         if (esp.equals("fisioterapia")) return true;
@@ -98,6 +125,10 @@ public abstract class Profissional extends Pessoa {
 
     public void removerHorario(HorarioDisponivel horario) {
         horariosDisponiveis.remove(horario);
+    }
+
+    public List<HorarioDisponivel> getHorariosDisponiveis() {
+        return horariosDisponiveis;
     }
 
     public static void reatribuirHorario(Profissional origem, Profissional destino, HorarioDisponivel horario) {
