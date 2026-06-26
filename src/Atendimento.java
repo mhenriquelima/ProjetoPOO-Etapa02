@@ -1,4 +1,4 @@
-public class Atendimento {
+public class Atendimento implements Exportavel{
     public int indiceConsulta;
     // COMPOSIÇÃO (R8)
     private Prontuario prontuario;

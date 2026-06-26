@@ -1,4 +1,4 @@
-public class Pagamento {
+public class Pagamento implements Exportavel{
     public int indiceConsulta;
     public double valorFinal;
     public String tipoPagamento;
