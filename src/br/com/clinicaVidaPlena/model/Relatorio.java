@@ -1,5 +1,7 @@
 package br.com.clinicaVidaPlena.model;
 
+import java.util.List;
+
 public class Relatorio {
 
     // mostra todas as consultas
@@ -57,33 +59,67 @@ public class Relatorio {
     }
 
     // resumo financeiro do dia
-    public static void gerarResumoFinanceiro(Consulta[] consultas, int totalConsultas,
-                                             Pagamento[] pagamentos, int totalPagamentos,
-                                             double[] multas, int totalMultas) {
-        int realizadas = 0;
-        int canceladas = 0;
-        double totalFaturado = 0;
-        double totalEmMultas = 0;
+    public static void gerarResumoFinanceiro(
+        Consulta[] consultas,
+        int totalConsultas,
+        List<Pagamento> pagamentos,
+        double[] multas,
+        int totalMultas) {
 
-        for (int i = 0; i < totalConsultas; i++) {
-            if (consultas[i].status.equals("realizada")) realizadas++;
-            if (consultas[i].status.equals("cancelada")) canceladas++;
+    int realizadas = 0;
+    int canceladas = 0;
+    double totalFaturado = 0;
+    double totalEmMultas = 0;
+
+    for (int i = 0; i < totalConsultas; i++) {
+        if (consultas[i].status.equals("realizada")) {
+            realizadas++;
         }
 
-        for (int i = 0; i < totalPagamentos; i++) {
-            totalFaturado = totalFaturado + pagamentos[i].valorFinal;
+        if (consultas[i].status.equals("cancelada")) {
+            canceladas++;
         }
-
-        for (int i = 0; i < totalMultas; i++) {
-            totalEmMultas = totalEmMultas + multas[i];
-        }
-
-        System.out.println("\n=== RESUMO FINANCEIRO ===");
-        System.out.println("Atendimentos realizados: " + realizadas);
-        System.out.println("Total faturado: R$" + Math.round(totalFaturado * 100.0) / 100.0);
-        System.out.println("Cancelamentos: " + canceladas);
-        System.out.println("Total em multas: R$" + Math.round(totalEmMultas * 100.0) / 100.0);
     }
+
+    for (Pagamento pagamento : pagamentos) {
+
+        // LIGACAO DINAMICA conforme R5
+        totalFaturado +=
+                pagamento.calcularValorFinal();
+    }
+
+    for (int i = 0; i < totalMultas; i++) {
+        totalEmMultas += multas[i];
+    }
+
+    System.out.println(
+            "\n=== RESUMO FINANCEIRO ==="
+    );
+
+    System.out.println(
+            "Atendimentos realizados: "
+                    + realizadas
+    );
+
+    System.out.println(
+            "Total faturado: R$"
+                    + Math.round(
+                            totalFaturado * 100.0
+                    ) / 100.0
+    );
+
+    System.out.println(
+            "Cancelamentos: "
+                    + canceladas
+    );
+
+    System.out.println(
+            "Total em multas: R$"
+                    + Math.round(
+                            totalEmMultas * 100.0
+                    ) / 100.0
+    );
+}
 
     // busca diagnostico de um atendimento pelo indice da consulta
     public static String buscarDiagnostico(int indiceConsulta, Atendimento[] atendimentos, int total) {
@@ -110,4 +146,47 @@ public class Relatorio {
         int ano = Integer.parseInt(data.substring(6, 10));
         return ano * 10000 + mes * 100 + dia;
     }
+}
+
+public static void gerarRelatorioPagamentos(
+        List<Pagamento> pagamentos) {
+
+    System.out.println(
+            "\n=== RELATORIO DE PAGAMENTOS ==="
+    );
+
+    if (pagamentos.isEmpty()) {
+        System.out.println(
+                "Nenhum pagamento registrado."
+        );
+        return;
+    }
+
+    double total = 0.0;
+
+    for (Pagamento pagamento : pagamentos) {
+
+        // LIGACAO DINAMICA conforme R5
+        double valorCalculado =
+                pagamento.calcularValorFinal();
+
+        pagamento.valorFinal =
+                valorCalculado;
+
+        System.out.println(
+                pagamento.getClass()
+                        .getSimpleName()
+                        + " -> "
+                        + pagamento.exibirResumo()
+        );
+
+        total += valorCalculado;
+    }
+
+    total =
+            Math.round(total * 100.0) / 100.0;
+
+    System.out.println(
+            "Total dos pagamentos: R$" + total
+    );
 }
