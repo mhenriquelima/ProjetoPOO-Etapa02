@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.Exceptions;
+
 public class ProfissionalNaoEncontradoException extends Exception {
     public ProfissionalNaoEncontradoException() {
         super();
