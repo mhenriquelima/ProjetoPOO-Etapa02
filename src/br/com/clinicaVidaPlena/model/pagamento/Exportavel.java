@@ -1,4 +1,4 @@
-package br.com.clinicaVidaPlena;
+package br.com.clinicaVidaPlena.model.pagamento;
 
 public interface Exportavel {
 

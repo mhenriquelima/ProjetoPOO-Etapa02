@@ -1,5 +1,6 @@
 package br.com.clinicaVidaPlena.model;
 
+import br.com.clinicaVidaPlena.model.pagamento.Pagamento;
 import java.util.List;
 
 public class Relatorio {
@@ -146,47 +147,46 @@ public class Relatorio {
         int ano = Integer.parseInt(data.substring(6, 10));
         return ano * 10000 + mes * 100 + dia;
     }
-}
-
-public static void gerarRelatorioPagamentos(
+    public static void gerarRelatorioPagamentos(
         List<Pagamento> pagamentos) {
 
-    System.out.println(
-            "\n=== RELATORIO DE PAGAMENTOS ==="
-    );
-
-    if (pagamentos.isEmpty()) {
         System.out.println(
-                "Nenhum pagamento registrado."
-        );
-        return;
-    }
-
-    double total = 0.0;
-
-    for (Pagamento pagamento : pagamentos) {
-
-        // LIGACAO DINAMICA conforme R5
-        double valorCalculado =
-                pagamento.calcularValorFinal();
-
-        pagamento.valorFinal =
-                valorCalculado;
-
-        System.out.println(
-                pagamento.getClass()
-                        .getSimpleName()
-                        + " -> "
-                        + pagamento.exibirResumo()
+                "\n=== RELATORIO DE PAGAMENTOS ==="
         );
 
-        total += valorCalculado;
+        if (pagamentos.isEmpty()) {
+            System.out.println(
+                    "Nenhum pagamento registrado."
+            );
+            return;
+        }
+
+        double total = 0.0;
+
+        for (Pagamento pagamento : pagamentos) {
+
+            // LIGACAO DINAMICA conforme R5
+            double valorCalculado =
+                    pagamento.calcularValorFinal();
+
+            pagamento.valorFinal =
+                    valorCalculado;
+
+            System.out.println(
+                    pagamento.getClass()
+                            .getSimpleName()
+                            + " -> "
+                            + pagamento.exibirResumo()
+            );
+
+            total += valorCalculado;
+        }
+
+        total =
+                Math.round(total * 100.0) / 100.0;
+
+        System.out.println(
+                "Total dos pagamentos: R$" + total
+        );
     }
-
-    total =
-            Math.round(total * 100.0) / 100.0;
-
-    System.out.println(
-            "Total dos pagamentos: R$" + total
-    );
 }

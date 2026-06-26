@@ -1,6 +1,4 @@
-package br.com.clinicaVidaPlena.model;
-
-import br.com.clinicaVidaPlena.Exportavel;
+package br.com.clinicaVidaPlena.model.pagamento;
 
 public abstract class Pagamento implements Exportavel {
 

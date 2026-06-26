@@ -1,8 +1,7 @@
-package br.com.clinicaVidaPlena;
+package br.com.clinicaVidaPlena.model.pagamento;
 
 import br.com.clinicaVidaPlena.Exceptions.ConvenioNaoCobreException;
 import br.com.clinicaVidaPlena.model.Convenio;
-import br.com.clinicaVidaPlena.model.Pagamento;
 
 public class PagamentoConvenio extends Pagamento {
 

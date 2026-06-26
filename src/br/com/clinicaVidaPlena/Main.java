@@ -17,7 +17,7 @@ import br.com.clinicaVidaPlena.model.Atendimento;
 import br.com.clinicaVidaPlena.model.Consulta;
 import br.com.clinicaVidaPlena.model.Convenio;
 import br.com.clinicaVidaPlena.model.Paciente;
-import br.com.clinicaVidaPlena.model.Pagamento;
+import br.com.clinicaVidaPlena.model.pagamento.Pagamento;
 import br.com.clinicaVidaPlena.model.Relatorio;
 import br.com.clinicaVidaPlena.model.pessoa.ClinicoGeral;
 import br.com.clinicaVidaPlena.model.pessoa.Fisioterapeuta;

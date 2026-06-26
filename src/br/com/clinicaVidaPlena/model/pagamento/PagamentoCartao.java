@@ -1,3 +1,8 @@
+package br.com.clinicaVidaPlena.model.pagamento;
+
+import br.com.clinicaVidaPlena.Exceptions.PagamentoInvalidoException;
+
+
 public class PagamentoCartao extends Pagamento {
 
     private static final int MINIMO_PARCELAS = 1;
