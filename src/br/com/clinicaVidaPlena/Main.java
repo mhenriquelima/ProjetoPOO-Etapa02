@@ -20,6 +20,7 @@ import br.com.clinicaVidaPlena.model.pagamento.PagamentoDinheiro;
 import br.com.clinicaVidaPlena.model.pessoa.ClinicoGeral;
 import br.com.clinicaVidaPlena.model.pessoa.Fisioterapeuta;
 import br.com.clinicaVidaPlena.model.pessoa.Nutricionista;
+import br.com.clinicaVidaPlena.model.pessoa.Pessoa;
 import br.com.clinicaVidaPlena.model.pessoa.Profissional;
 import br.com.clinicaVidaPlena.model.pessoa.Psicologo;
 import java.util.ArrayList;
@@ -45,6 +46,8 @@ public class Main {
 
     static double[] multas = new double[100];
     static int totalMultas = 0;
+
+    static List<Pessoa> pessoas = new ArrayList<Pessoa>();
 
     static Scanner sc = new Scanner(System.in);
 
@@ -197,7 +200,7 @@ public class Main {
             System.out.println("Tipo de cadastro invalido.");
             return;
         }
-
+        pessoas.add(pacientes[totalPacientes]);
         totalPacientes++;
         System.out.println("Paciente cadastrado com sucesso!");
     }
@@ -541,6 +544,7 @@ public class Main {
         }
 
         profissionais[totalProfissionais] = profissional;
+        pessoas.add(profissionais[totalProfissionais]);
         totalProfissionais++;
 
         System.out.println("Profissional cadastrado!");
@@ -1251,7 +1255,12 @@ public class Main {
             System.out.println("Tipo de registro invalido.");
             return;
         }
-
+        String nomeProfissional = consultas[idxConsulta].nomeProfissional;
+        int idxProf = buscarIndiceProfissional(nomeProfissional);
+        
+        if (idxProf != -1 && profissionais[idxProf] instanceof Psicologo) {
+            profissionais[idxProf].registrarEspecifico(atendimentos[totalAtendimentos]);
+        }
         consultas[idxConsulta].realizar();
         totalAtendimentos++;
 
@@ -1491,6 +1500,48 @@ public class Main {
         }
     }
 
+    public static void relatorioUnificadoPessoas() {
+        System.out.println("\nRELATORIO UNIFICADO DE PESSOAS");
+
+        if (pessoas.isEmpty()) {
+            System.out.println("Nenhuma pessoa cadastrada.");
+            return;
+        }
+
+        int totalPacientesRelatorio = 0;
+        int totalProfissionaisRelatorio = 0;
+
+        for (Pessoa pessoa : pessoas) {
+            // LIGAÇÃO DINÂMICA: o método chamado depende do tipo REAL do objeto, não do tipo da referência
+            System.out.println(pessoa.exibirResumo());
+
+            if (pessoa instanceof Paciente) {
+                totalPacientesRelatorio++;
+            }
+
+            if (pessoa instanceof Profissional) {
+                totalProfissionaisRelatorio++;
+
+                Profissional prof = (Profissional) pessoa;
+
+                if (prof instanceof Fisioterapeuta) {
+                    System.out.println("Tipo real: Fisioterapeuta");
+                } else if (prof instanceof Psicologo) {
+                    System.out.println("Tipo real: Psicologo");
+                } else if (prof instanceof Nutricionista) {
+                    System.out.println("Tipo real: Nutricionista");
+                } else if (prof instanceof ClinicoGeral) {
+                    System.out.println("Tipo real: Clinico Geral");
+                }
+            }
+
+            System.out.println("---");
+        }
+
+        System.out.println("Total de pacientes: " + totalPacientesRelatorio);
+        System.out.println("Total de profissionais: " + totalProfissionaisRelatorio);
+    }
+
     // -------------------------------------------------------------------------
     // RELATORIOS
     // -------------------------------------------------------------------------
@@ -1505,6 +1556,7 @@ public class Main {
             System.out.println("3 - Por periodo");
             System.out.println("4 - Resumo financeiro");
             System.out.println("5 - Relatorio de pagamentos");
+            System.out.println("6 - Relatorio unificado de pessoas");
             System.out.println("0 - Voltar");
             System.out.print("Opcao: ");
 
@@ -1562,6 +1614,10 @@ public class Main {
 
                 case 5:
                     Relatorio.gerarRelatorioPagamentos(pagamentos);
+                    break;
+
+                case 6:
+                    relatorioUnificadoPessoas();
                     break;
 
                 case 0:
