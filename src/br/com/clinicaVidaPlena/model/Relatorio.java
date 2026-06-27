@@ -1,11 +1,9 @@
 package br.com.clinicaVidaPlena.model;
+import br.com.clinicaVidaPlena.model.pagamento.Pagamento;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import br.com.clinicaVidaPlena.model.pagamento.Pagamento;
-import java.util.List;
 
 public class Relatorio {
 
@@ -154,53 +152,6 @@ public class Relatorio {
             }
         }
     }
-
-    for (Pagamento pagamento : pagamentos) {
-
-        // LIGACAO DINAMICA conforme R5
-        totalFaturado +=
-                pagamento.calcularValorFinal();
-    }
-
-    for (int i = 0; i < totalMultas; i++) {
-        totalEmMultas += multas[i];
-    }
-
-    public static void gerarResumoFinanceiro(Consulta[] consultas, int totalConsultas,
-                                             Pagamento[] pagamentos, int totalPagamentos,
-                                             double[] multas, int totalMultas) {
-        gerarResumoFinanceiro(converterConsultas(consultas, totalConsultas),
-                converterPagamentos(pagamentos, totalPagamentos),
-                converterMultas(multas, totalMultas));
-    }
-    System.out.println(
-            "\n=== RESUMO FINANCEIRO ==="
-    );
-
-    System.out.println(
-            "Atendimentos realizados: "
-                    + realizadas
-    );
-
-    System.out.println(
-            "Total faturado: R$"
-                    + Math.round(
-                            totalFaturado * 100.0
-                    ) / 100.0
-    );
-
-    System.out.println(
-            "Cancelamentos: "
-                    + canceladas
-    );
-
-    System.out.println(
-            "Total em multas: R$"
-                    + Math.round(
-                            totalEmMultas * 100.0
-                    ) / 100.0
-    );
-}
 
     // busca diagnostico de um atendimento pelo indice da consulta
     public static String buscarDiagnostico(int indiceConsulta, Map<Integer, Atendimento> atendimentos) {

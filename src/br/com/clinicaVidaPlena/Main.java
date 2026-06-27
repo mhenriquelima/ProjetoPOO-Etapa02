@@ -1608,25 +1608,8 @@ public class Main {
                     Relatorio.gerarResumoFinanceiro(
                             consultas,
                             totalConsultas,
-                            pagamentos,
-                            multas,
-                            totalMultas
+                            multas
                     );
-                    break;
-
-                case 5:
-                    Relatorio.gerarRelatorioPagamentos(pagamentos);
-                    break;
-
-                case 6:
-                    relatorioUnificadoPessoas();
-                    break;
-
-                case 0:
-                    break;
-
-                default:
-                    System.out.println("Opcao invalida!");
                     break;
                 case 5:
                     Relatorio.gerarRelatorioCancelamentos(consultas, totalConsultas);
@@ -1634,8 +1617,11 @@ public class Main {
                 case 6:
                     Relatorio.gerarRelatorioMultasAplicadas(multas, totalMultas);
                     break;
-                case 0: break;
-                default: System.out.println("Opcao invalida!"); break;
+                case 0:
+                    break;
+                default:
+                    System.out.println("Opcao invalida!");
+                    break;
             }
         }
     }
