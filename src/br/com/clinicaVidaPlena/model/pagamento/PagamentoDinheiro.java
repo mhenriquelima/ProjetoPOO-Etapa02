@@ -1,3 +1,5 @@
+package br.com.clinicaVidaPlena.model.pagamento;
+
 public class PagamentoDinheiro extends Pagamento {
 
     private static final double DESCONTO_FIXO = 0.05;

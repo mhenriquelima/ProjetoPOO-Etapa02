@@ -4,6 +4,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import br.com.clinicaVidaPlena.model.pagamento.Pagamento;
+import java.util.List;
+
 public class Relatorio {
 
     // mostra todas as consultas
@@ -150,12 +153,17 @@ public class Relatorio {
                 totalEmMultas = totalEmMultas + valorMulta;
             }
         }
+    }
 
-        System.out.println("\n=== RESUMO FINANCEIRO ===");
-        System.out.println("Atendimentos realizados: " + realizadas);
-        System.out.println("Total faturado: R$" + Math.round(totalFaturado * 100.0) / 100.0);
-        System.out.println("Cancelamentos: " + canceladas);
-        System.out.println("Total em multas: R$" + Math.round(totalEmMultas * 100.0) / 100.0);
+    for (Pagamento pagamento : pagamentos) {
+
+        // LIGACAO DINAMICA conforme R5
+        totalFaturado +=
+                pagamento.calcularValorFinal();
+    }
+
+    for (int i = 0; i < totalMultas; i++) {
+        totalEmMultas += multas[i];
     }
 
     public static void gerarResumoFinanceiro(Consulta[] consultas, int totalConsultas,
@@ -165,6 +173,34 @@ public class Relatorio {
                 converterPagamentos(pagamentos, totalPagamentos),
                 converterMultas(multas, totalMultas));
     }
+    System.out.println(
+            "\n=== RESUMO FINANCEIRO ==="
+    );
+
+    System.out.println(
+            "Atendimentos realizados: "
+                    + realizadas
+    );
+
+    System.out.println(
+            "Total faturado: R$"
+                    + Math.round(
+                            totalFaturado * 100.0
+                    ) / 100.0
+    );
+
+    System.out.println(
+            "Cancelamentos: "
+                    + canceladas
+    );
+
+    System.out.println(
+            "Total em multas: R$"
+                    + Math.round(
+                            totalEmMultas * 100.0
+                    ) / 100.0
+    );
+}
 
     // busca diagnostico de um atendimento pelo indice da consulta
     public static String buscarDiagnostico(int indiceConsulta, Map<Integer, Atendimento> atendimentos) {
@@ -237,5 +273,47 @@ public class Relatorio {
         int mes = Integer.parseInt(data.substring(3, 5));
         int ano = Integer.parseInt(data.substring(6, 10));
         return ano * 10000 + mes * 100 + dia;
+    }
+    public static void gerarRelatorioPagamentos(
+        List<Pagamento> pagamentos) {
+
+        System.out.println(
+                "\n=== RELATORIO DE PAGAMENTOS ==="
+        );
+
+        if (pagamentos.isEmpty()) {
+            System.out.println(
+                    "Nenhum pagamento registrado."
+            );
+            return;
+        }
+
+        double total = 0.0;
+
+        for (Pagamento pagamento : pagamentos) {
+
+            // LIGACAO DINAMICA conforme R5
+            double valorCalculado =
+                    pagamento.calcularValorFinal();
+
+            pagamento.valorFinal =
+                    valorCalculado;
+
+            System.out.println(
+                    pagamento.getClass()
+                            .getSimpleName()
+                            + " -> "
+                            + pagamento.exibirResumo()
+            );
+
+            total += valorCalculado;
+        }
+
+        total =
+                Math.round(total * 100.0) / 100.0;
+
+        System.out.println(
+                "Total dos pagamentos: R$" + total
+        );
     }
 }

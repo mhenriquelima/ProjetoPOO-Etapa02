@@ -1,3 +1,7 @@
+package br.com.clinicaVidaPlena.model.pagamento;
+
+import br.com.clinicaVidaPlena.Exceptions.PagamentoInvalidoException;
+
 public class TestePagamentos {
 
     public static void main(String[] args) {

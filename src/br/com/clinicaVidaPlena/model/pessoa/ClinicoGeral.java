@@ -1,26 +1,25 @@
 package br.com.clinicaVidaPlena.model.pessoa;
 
 public class ClinicoGeral extends Profissional {
-
-    private int totalConsultas;
+    private String encaminhamento;
 
     public ClinicoGeral(String nome) {
         super(nome, "clinica geral");
-        this.totalConsultas = 0;
+        this.encaminhamento = "Não informado";
     }
 
     public ClinicoGeral(String nome, String registro, double valor) {
         super(nome, "clinica geral", registro, valor);
-        this.totalConsultas = 0;
+        this.encaminhamento = "Não informado";
     }
 
     public ClinicoGeral(String nome, String registro, double valor, String[] dias, int totalDias) {
         super(nome, "clinica geral", registro, valor, dias, totalDias);
-        this.totalConsultas = 0;
+        this.encaminhamento = "Não informado";
     }
 
-    public void registrarConsulta() {
-        totalConsultas++;
+    public void registrarEncaminhamento(String encaminhamento) {
+        this.encaminhamento = encaminhamento;
     }
 
     @Override
@@ -30,7 +29,8 @@ public class ClinicoGeral extends Profissional {
 
     @Override
     public String exibirResumo() {
-        return super.exibirResumo()
-                + " | Consultas: " + totalConsultas;
+        String resumo = super.exibirResumo();
+        resumo = resumo + " | Encaminhamento: " + encaminhamento;
+        return resumo;
     }
 }
