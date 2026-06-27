@@ -1,15 +1,10 @@
 package br.com.clinicaVidaPlena;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
-
 import br.com.clinicaVidaPlena.Exceptions.ConvenioNaoCobreException;
-import br.com.clinicaVidaPlena.Exceptions.PagamentoInvalidoException;
 import br.com.clinicaVidaPlena.Exceptions.EspecialidadeInvalidaException;
 import br.com.clinicaVidaPlena.Exceptions.HorarioIndisponivelException;
 import br.com.clinicaVidaPlena.Exceptions.PacienteInativoException;
 import br.com.clinicaVidaPlena.Exceptions.PacienteNaoEncontradoException;
+import br.com.clinicaVidaPlena.Exceptions.PagamentoInvalidoException;
 import br.com.clinicaVidaPlena.Exceptions.ProfissionalNaoEncontradoException;
 import br.com.clinicaVidaPlena.Exceptions.ValorInvalidoException;
 import br.com.clinicaVidaPlena.model.Agendavel;
@@ -17,13 +12,19 @@ import br.com.clinicaVidaPlena.model.Atendimento;
 import br.com.clinicaVidaPlena.model.Consulta;
 import br.com.clinicaVidaPlena.model.Convenio;
 import br.com.clinicaVidaPlena.model.Paciente;
-import br.com.clinicaVidaPlena.model.pagamento.Pagamento;
 import br.com.clinicaVidaPlena.model.Relatorio;
+import br.com.clinicaVidaPlena.model.pagamento.Pagamento;
+import br.com.clinicaVidaPlena.model.pagamento.PagamentoCartao;
+import br.com.clinicaVidaPlena.model.pagamento.PagamentoConvenio;
+import br.com.clinicaVidaPlena.model.pagamento.PagamentoDinheiro;
 import br.com.clinicaVidaPlena.model.pessoa.ClinicoGeral;
 import br.com.clinicaVidaPlena.model.pessoa.Fisioterapeuta;
 import br.com.clinicaVidaPlena.model.pessoa.Nutricionista;
 import br.com.clinicaVidaPlena.model.pessoa.Profissional;
 import br.com.clinicaVidaPlena.model.pessoa.Psicologo;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 public class Main {
 
@@ -328,7 +329,7 @@ public class Main {
 
     public static int buscarIndicePaciente(String cpf) {
         for (int i = 0; i < totalPacientes; i++) {
-            if (pacientes[i].cpf.equals(cpf)) {
+            if (pacientes[i].getCpf().equals(cpf)) {
                 return i;
             }
         }
@@ -633,7 +634,7 @@ public class Main {
 
     public static int buscarIndiceProfissional(String nome) {
         for (int i = 0; i < totalProfissionais; i++) {
-            if (profissionais[i].nome.equals(nome)) {
+            if (profissionais[i].getNome().equals(nome)) {
                 return i;
             }
         }
@@ -755,10 +756,10 @@ public class Main {
                 throw new HorarioIndisponivelException("Nao existe profissional disponivel nesse horario.");
             }
 
-            Agendavel agendamento = new Consulta(cpf, profissionais[idxProf].nome, data, horario);
+            Agendavel agendamento = new Consulta(cpf, profissionais[idxProf].getNome(), data, horario);
             consultas[totalConsultas] = (Consulta) agendamento;
             totalConsultas++;
-            System.out.println("Consulta agendada com " + profissionais[idxProf].nome + "!");
+            System.out.println("Consulta agendada com " + profissionais[idxProf].getNome() + "!");
         } catch (PacienteNaoEncontradoException | PacienteInativoException
                 | EspecialidadeInvalidaException | HorarioIndisponivelException e) {
             System.out.println(e.getMessage());
@@ -815,7 +816,7 @@ public class Main {
                 continue;
             }
 
-            if (!temConflito(profissionais[i].nome, data, horario)) {
+            if (!temConflito(profissionais[i].getNome(), data, horario)) {
                 return i;
             }
         }
@@ -965,8 +966,8 @@ public class Main {
             novoHorario = sc.nextLine();
         }
 
-        String nomeProfissional = consultas[idxConsulta].nomeProfissional;
-        int idxProfissional = buscarIndiceProfissional(nomeProfissional);
+        String nomeProf = consultas[idxConsulta].nomeProfissional;
+        int idxProfissional = buscarIndiceProfissional(nomeProf);
 
         if (idxProfissional == -1) {
             System.out.println("Profissional nao encontrado.");
@@ -982,7 +983,7 @@ public class Main {
             }
         }
 
-        if (temConflito(nomeProfissional, novaData, novoHorario)) {
+        if (temConflito(nomeProf, novaData, novoHorario)) {
             System.out.println("Horario ocupado. Nao foi possivel remarcar.");
             return;
         }
@@ -991,7 +992,7 @@ public class Main {
 
         consultas[totalConsultas] = new Consulta(
                 cpf,
-                nomeProfissional,
+                nomeProf,
                 novaData,
                 novoHorario,
                 consultas[idxConsulta].tipo
@@ -1030,11 +1031,7 @@ public class Main {
         }
     }
 
-    public static boolean temConflito(
-            String nomeProfissional,
-            String data,
-            String horario) {
-    // verifica se ja tem consulta nesse horario com esse profissional
+     // verifica se ja tem consulta nesse horario com esse profissional
     public static boolean temConflito(String nomeProf, String data, String horario) {
         int idxProf = buscarIndiceProfissional(nomeProf);
         if (idxProf == -1) {
@@ -1047,7 +1044,7 @@ public class Main {
         }
 
         for (int i = 0; i < totalConsultas; i++) {
-            if (consultas[i].nomeProfissional.equals(nomeProfissional)
+            if (consultas[i].nomeProfissional.equals(nomeProf)
                     && consultas[i].data.equals(data)
                     && consultas[i].horario.equals(horario)
                     && consultas[i].status.equals("agendada")) {
@@ -1073,11 +1070,9 @@ public class Main {
             if (h < 10) {
                 teste = "0" + h + ":00";
             } else {
-                horarioTeste = hora + ":00";
+                teste = h + ":00";
             }
 
-            if (!temConflito(nomeProfissional, data, horarioTeste)) {
-                return horarioTeste;
             if (!profissionais[idxProf].atendeNoHorario(diaSemana, teste)) {
                 continue;
             }
