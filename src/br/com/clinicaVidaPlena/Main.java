@@ -1555,8 +1555,10 @@ public class Main {
             System.out.println("2 - Por profissional");
             System.out.println("3 - Por periodo");
             System.out.println("4 - Resumo financeiro");
-            System.out.println("5 - Relatorio de pagamentos");
-            System.out.println("6 - Relatorio unificado de pessoas");
+            System.out.println("5 - Cancelamentos");
+            System.out.println("6 - Multas aplicadas");
+            System.out.println("7 - Relatorio de pagamentos");
+            System.out.println("8 - Relatorio unificado de pessoas");
             System.out.println("0 - Voltar");
             System.out.print("Opcao: ");
 
@@ -1626,6 +1628,14 @@ public class Main {
                 default:
                     System.out.println("Opcao invalida!");
                     break;
+                case 5:
+                    Relatorio.gerarRelatorioCancelamentos(consultas, totalConsultas);
+                    break;
+                case 6:
+                    Relatorio.gerarRelatorioMultasAplicadas(multas, totalMultas);
+                    break;
+                case 0: break;
+                default: System.out.println("Opcao invalida!"); break;
             }
         }
     }
