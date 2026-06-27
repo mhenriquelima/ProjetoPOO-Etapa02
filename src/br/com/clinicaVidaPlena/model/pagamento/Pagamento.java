@@ -1,5 +1,5 @@
 package br.com.clinicaVidaPlena.model.pagamento;
-
+import br.com.clinicaVidaPlena.model.Exportavel;
 public abstract class Pagamento implements Exportavel {
 
     public int indiceConsulta;
@@ -49,7 +49,7 @@ public abstract class Pagamento implements Exportavel {
     }
 
     @Override
-    public String exportar() {
+    public String exportarDados() {
         return indiceConsulta + ";"
                 + tipoPagamento + ";"
                 + arredondar(valorFinal) + ";"

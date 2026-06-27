@@ -1,6 +1,10 @@
 package br.com.clinicaVidaPlena.model;
 
-public class Consulta implements Agendavel {
+// extends é usado quando uma classe herda outra classe
+// implements é usado quando uma classe segue uma ou mais interfaces
+// Java permite apenas 1 extends, mas múltiplos implements
+
+public class Consulta implements Agendavel, Exportavel {
     public String cpfPaciente;
     public String nomeProfissional;
     public String data;
@@ -38,8 +42,14 @@ public class Consulta implements Agendavel {
         this.status = status;
     }
 
+    @Override
     public void cancelar() {
         this.status = "cancelada";
+    }
+
+    @Override
+    public void agendar() {
+    this.status = "agendada";
     }
 
     // cancelar com motivo - retorna a msg formatada
@@ -48,6 +58,7 @@ public class Consulta implements Agendavel {
         return "Consulta cancelada. Motivo: " + motivo;
     }
 
+    @Override
     public void remarcar() {
         this.status = "remarcada";
     }
@@ -61,4 +72,9 @@ public class Consulta implements Agendavel {
                 + " | Data: " + data + " | Hora: " + horario
                 + " | Tipo: " + tipo + " | Status: " + status;
     }
+    @Override
+    public String exportarDados() {
+        return exibirResumo();
+    }
+
 }
