@@ -7,6 +7,9 @@ public class ConsultaJaRealizadaException extends Exception {
     public ConsultaJaRealizadaException(String mensagem) {
         super(mensagem);
     }
+    public ConsultaJaRealizadaException(String mensagem, Throwable causa) {
+        super(mensagem, causa);
+    }
     @Override
     public String toString() {
         return "a seguinte excecao ocorreu: " + this.getClass().getName() + "\n"
