@@ -2,29 +2,28 @@ package br.com.clinicaVidaPlena.model.pessoa;
 
 // classe psicologo herda da classe abstrata profissional
 public class Psicologo extends Profissional {
-
-    private String totalSessoes;
+    private String abordagem;
 
     // recebe apenas o nome
     public Psicologo(String nome) {
         super(nome, "psicologia");
-        this.totalSessoes = "Não informada";
+        this.abordagem = "Não informada";
     }
 
     // recebe nome, registro e valor
     public Psicologo(String nome, String registro, double valor) {
         super(nome, "psicologia", registro, valor);
-        this.totalSessoes = "Não informada";
+        this.abordagem = "Não informada";
     }
 
     // recebe tudo
     public Psicologo(String nome, String registro, double valor, String[] dias, int totalDias) {
         super(nome, "psicologia", registro, valor, dias, totalDias);
-        this.totalSessoes = "Não informada";
+        this.abordagem = "Não informada";
     }
 
-    public void definirTotalSessoes(String totalSessoes) {
-        this.totalSessoes = totalSessoes;
+    public void definirAbordagem(String abordagem) {
+        this.abordagem = abordagem;
     }
 
     // sobrescrita do metodo abstrato da classe pai
@@ -37,7 +36,7 @@ public class Psicologo extends Profissional {
     @Override
     public String exibirResumo() {
         String resumo = super.exibirResumo();
-        resumo = resumo + " | total de sessões: " + totalSessoes;
+        resumo = resumo + " | abordagem: " + abordagem;
         return resumo;
     }
 }
