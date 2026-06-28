@@ -1,18 +1,16 @@
-package br.com.clinicaVidaPlena.model;
+package br.com.clinicaVidaPlena.model.pessoa;
 
-import br.com.clinicaVidaPlena.model.pessoa.Pessoa;
+import br.com.clinicaVidaPlena.model.Convenio;
 
 public class Paciente extends Pessoa {
-    public int idade;
-    public String telefone;
+    private int idade;
     // ASSOCIAÇÃO (R8)
-    public Convenio convenio;
-    public boolean ativo;
+    private Convenio convenio;
+    private boolean ativo;
 
     public Paciente(String nome, String cpf) {
         super(nome, cpf, "Não Informado", "01/01/2000"); 
         this.idade = 0;
-        this.telefone = "";
         this.convenio = null;
         this.ativo = true;
     }
@@ -20,7 +18,6 @@ public class Paciente extends Pessoa {
     public Paciente(String nome, String cpf, int idade, String telefone) {
         super(nome, cpf, telefone, "01/01/2000");
         this.idade = idade;
-        this.telefone = telefone;
         this.convenio = null;
         this.ativo = true;
     }
@@ -28,10 +25,7 @@ public class Paciente extends Pessoa {
     // construtor com todos os dados
     public Paciente(String nome, String cpf, int idade, String telefone, Convenio convenio) {
         super(nome, cpf, telefone, "01/01/2000");
-        this.nome = nome;
-        this.cpf = cpf;
         this.idade = idade;
-        this.telefone = telefone;
         this.convenio = convenio;
         this.ativo = true;
     }
@@ -51,14 +45,26 @@ public class Paciente extends Pessoa {
         this.ativo = false;
     }
 
+    public int getIdade() {
+        return idade;
+    }
+
+    public Convenio getConvenio() {
+        return convenio;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
     @Override
     public String exibirResumo() {
         String status = "Sim";
         if (!ativo) {
             status = "Nao";
         }
-        return "Nome: " + nome + " | CPF: " + cpf + " | Idade: " + idade
-                + " | Tel: " + telefone + " | Convenio: " + (convenio == null ? "" : convenio.getNome())
+        return "Nome: " + getNome() + " | CPF: " + getCpf() + " | Idade: " + idade
+                + " | Tel: " + getTelefone() + " | Convenio: " + (convenio == null ? "" : convenio.getNome())
                 + " | Ativo: " + status;
     }
 }
