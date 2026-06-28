@@ -1,0 +1,169 @@
+package br.com.clinicaVidaPlena.model.pessoa;
+
+import br.com.clinicaVidaPlena.model.Atendimento;
+import br.com.clinicaVidaPlena.model.HorarioDisponivel;
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class Profissional extends Pessoa {
+    protected String especialidade;
+    protected String registroProfissional;
+    protected double valorConsulta;
+    // AGREGAÇÃO (R8)
+    private List<HorarioDisponivel> horariosDisponiveis;    
+
+    // SOBRECARGA: 3 construtores com o mesmo nome (Profissional), mas
+    // assinaturas diferentes - permitem cadastrar o profissional com
+    // diferentes niveis de detalhe (so nome, com registro/valor, ou completo
+    // com horarios de atendimento).
+    public Profissional(String nome, String especialidade) {
+        super(nome, "00000000000", "Não Informado", "01/01/1980");
+        this.especialidade = especialidade;
+        this.registroProfissional = "";
+        this.valorConsulta = 0;
+        this.horariosDisponiveis = new ArrayList<>();
+    }
+
+    public Profissional(String nome, String especialidade, String registroProfissional, double valorConsulta) {
+        super(nome, "00000000000", "Não Informado", "01/01/1980");
+        this.especialidade = especialidade;
+        this.registroProfissional = registroProfissional;
+        this.valorConsulta = valorConsulta;
+        this.horariosDisponiveis = new ArrayList<>();
+    }
+
+    public Profissional(String nome, String especialidade, String registroProfissional, double valorConsulta, String[] dias, int totalDias) {
+        super(nome, "00000000000", "Não Informado", "01/01/1980");
+        this.especialidade = especialidade;
+        this.registroProfissional = registroProfissional;
+        this.valorConsulta = valorConsulta;
+        this.horariosDisponiveis = new ArrayList<>();
+        for (int i = 0; i < totalDias; i++) {
+            horariosDisponiveis.add(new HorarioDisponivel(dias[i], "manha")
+            );
+        }
+    }
+
+    protected boolean validarRegistro() {
+        return this.registroProfissional != null && !this.registroProfissional.trim().isEmpty();
+    }
+
+    public String getEspecialidade() {
+        return especialidade;
+    }
+
+    public void setEspecialidade(String especialidade) {
+        this.especialidade = especialidade;
+    }
+
+    public String getRegistroProfissional() {
+        return registroProfissional;
+    }
+
+    public void setRegistroProfissional(String registroProfissional) {
+        this.registroProfissional = registroProfissional;
+    }
+
+    public double getValorConsulta() {
+        return valorConsulta;
+    }
+
+    public void setValorConsulta(double valorConsulta) {
+        this.valorConsulta = valorConsulta;
+    }
+
+    // adiciona ao atendimento as informacoes particulares de cada especialidade
+    public abstract void registrarEspecifico(Atendimento atendimento);
+
+    public void atualizar(String registro, double valor) {
+        this.registroProfissional = registro;
+        this.valorConsulta = valor;
+    }
+
+    public void atualizar(String registro, double valor, String[] dias, int totalDias) {
+        this.registroProfissional = registro;
+        this.valorConsulta = valor;
+        this.horariosDisponiveis = new ArrayList<>();
+        for (int i = 0; i < totalDias; i++) {
+            horariosDisponiveis.add(new HorarioDisponivel(dias[i], "manha")
+            );
+        }
+    }
+
+    public boolean atendeNoDia(String dia) {
+
+        for (HorarioDisponivel h : horariosDisponiveis) {
+
+            if (h.getDiaDaSemana().equals(dia)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean atendeNoHorario(String dia, String horario) {
+        for (HorarioDisponivel h : horariosDisponiveis) {
+            if (h.getDiaDaSemana().equals(dia) && horarioNoTurno(horario, h.getTurno())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean horarioNoTurno(String horario, String turno) {
+        int hora = Integer.parseInt(horario.substring(0, 2));
+
+        if (turno.equals("manha")) {
+            return hora >= 8 && hora < 12;
+        }
+
+        if (turno.equals("tarde")) {
+            return hora >= 12 && hora < 18;
+        }
+
+        if (turno.equals("noite")) {
+            return hora >= 18 && hora <= 21;
+        }
+
+        return false;
+    }
+
+    public static boolean especialidadeValida(String esp) {
+        if (esp.equals("clinica geral")) return true;
+        if (esp.equals("fisioterapia")) return true;
+        if (esp.equals("psicologia")) return true;
+        if (esp.equals("nutricao")) return true;
+        return false;
+    }
+
+    // SOBRESCRITA: implementa o metodo abstrato exibirResumo() declarado em
+    // Pessoa, dando ao profissional sua propria representacao em texto.
+    @Override
+    public String exibirResumo() {
+        String dias = "";
+    for (int i = 0; i < horariosDisponiveis.size(); i++) {
+        if (i > 0) dias += ", ";
+        dias += horariosDisponiveis.get(i).getDiaDaSemana();
+    }
+        return "Nome: " + nome + " | Espec: " + especialidade + " | Reg: " + registroProfissional
+                + " | Valor: R$" + valorConsulta + " | Dias: " + dias;
+    }
+
+    public void adicionarHorario(HorarioDisponivel horario) {
+    horariosDisponiveis.add(horario);
+    }
+
+    public void removerHorario(HorarioDisponivel horario) {
+        horariosDisponiveis.remove(horario);
+    }
+
+    public List<HorarioDisponivel> getHorariosDisponiveis() {
+        return horariosDisponiveis;
+    }
+
+    public static void reatribuirHorario(Profissional origem, Profissional destino, HorarioDisponivel horario) {
+        origem.removerHorario(horario);
+        destino.adicionarHorario(horario);
+    }
+}
