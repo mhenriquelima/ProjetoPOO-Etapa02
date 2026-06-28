@@ -335,7 +335,7 @@ public class Main {
         if (paciente == null) {
             System.out.println("Paciente nao encontrado.");
         } else {
-            System.out.println(pacientes.get(idx).exibirResumo());
+            System.out.println(paciente.exibirResumo());
         }
     }
 
@@ -360,7 +360,7 @@ public class Main {
         if (paciente == null) {
             System.out.println("Paciente nao encontrado.");
         } else {
-            pacientes.get(idx).desativar();
+            paciente.desativar();
             System.out.println("Paciente desativado.");
         }
     }
@@ -1576,9 +1576,11 @@ public class Main {
             System.out.println("2 - Por profissional");
             System.out.println("3 - Por periodo");
             System.out.println("4 - Resumo financeiro");
-            System.out.println("5 - Relatorio de pagamentos");
-            System.out.println("6 - Relatorio unificado de pessoas");
-            System.out.println("7 - Exportar dados operacionais");
+            System.out.println("5 - Cancelamentos");
+            System.out.println("6 - Multas aplicadas");
+            System.out.println("7 - Relatorio de pagamentos");
+            System.out.println("8 - Relatorio unificado de pessoas");
+            System.out.println("9 - Exportar dados operacionais");
             System.out.println("0 - Voltar");
             op = lerInteiro("Opcao: ");
 
@@ -1586,9 +1588,7 @@ public class Main {
                 case 1:
                     Relatorio.gerarRelatorio(
                             consultas,
-                            consultas.size(),
-                            atendimentos,
-                            atendimentos.size()
+                            mapaAtendimentosPorConsulta()
                     );
                     break;
 
@@ -1598,9 +1598,7 @@ public class Main {
 
                     Relatorio.gerarRelatorio(
                             consultas,
-                            consultas.size(),
-                            atendimentos,
-                            atendimentos.size(),
+                            mapaAtendimentosPorConsulta(),
                             nome
                     );
                     break;
@@ -1614,9 +1612,7 @@ public class Main {
 
                     Relatorio.gerarRelatorio(
                             consultas,
-                            consultas.size(),
-                            atendimentos,
-                            atendimentos.size(),
+                            mapaAtendimentosPorConsulta(),
                             inicio,
                             fim
                     );
@@ -1625,10 +1621,8 @@ public class Main {
                 case 4:
                     Relatorio.gerarResumoFinanceiro(
                             consultas,
-                            consultas.size(),
                             pagamentos,
-                            multas,
-                            multas.size()
+                            mapaMultasPorIndice()
                     );
                     break;
                 case 5:
@@ -1643,10 +1637,9 @@ public class Main {
                 case 8:
                     relatorioUnificadoPessoas();
                     break;
-                
-                case 7:
+                case 9:
                     exportarDadosOperacionais();
-
+                    break;
                 case 0:
                     break;
                 default:
