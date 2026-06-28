@@ -2,6 +2,7 @@ package br.com.clinicaVidaPlena;
 import br.com.clinicaVidaPlena.Exceptions.ConvenioNaoCobreException;
 import br.com.clinicaVidaPlena.Exceptions.EspecialidadeInvalidaException;
 import br.com.clinicaVidaPlena.Exceptions.HorarioIndisponivelException;
+import br.com.clinicaVidaPlena.Exceptions.OperacaoInvalidaException;
 import br.com.clinicaVidaPlena.Exceptions.PacienteInativoException;
 import br.com.clinicaVidaPlena.Exceptions.PacienteNaoEncontradoException;
 import br.com.clinicaVidaPlena.Exceptions.PagamentoInvalidoException;
@@ -11,7 +12,7 @@ import br.com.clinicaVidaPlena.model.Agendavel;
 import br.com.clinicaVidaPlena.model.Atendimento;
 import br.com.clinicaVidaPlena.model.Consulta;
 import br.com.clinicaVidaPlena.model.Convenio;
-import br.com.clinicaVidaPlena.model.Paciente;
+import br.com.clinicaVidaPlena.model.pessoa.Paciente;
 import br.com.clinicaVidaPlena.model.Relatorio;
 import br.com.clinicaVidaPlena.model.pagamento.Pagamento;
 import br.com.clinicaVidaPlena.model.pagamento.PagamentoCartao;
@@ -645,7 +646,7 @@ public class Main {
         boolean encontrou = false;
 
         for (int i = 0; i < profissionais.size(); i++) {
-            if (profissionais.get(i).especialidade.equals(especialidade)) {
+            if (profissionais.get(i).getEspecialidade().equals(especialidade)) {
                 System.out.println(profissionais.get(i).exibirResumo());
                 encontrou = true;
             }
@@ -794,7 +795,7 @@ public class Main {
             throw new PacienteNaoEncontradoException("Paciente nao encontrado.");
         }
 
-        if (!paciente.ativo) {
+        if (!paciente.isAtivo()) {
             throw new PacienteInativoException("Paciente inativo. Nao e possivel agendar.");
         }
     }   
@@ -805,7 +806,7 @@ public class Main {
         if (idxProf == -1) {
             throw new ProfissionalNaoEncontradoException("Profissional nao encontrado.");
         }
-        if (profissionais.get(idxProf).valorConsulta <= 0) {
+        if (profissionais.get(idxProf).getValorConsulta() <= 0) {
             throw new ValorInvalidoException("Profissional sem valor definido. Nao pode agendar.");
         }
         return idxProf;
@@ -824,11 +825,11 @@ public class Main {
         boolean encontrouEspecialidade = false;
 
         for (int i = 0; i < profissionais.size(); i++) {
-            if (!profissionais.get(i).especialidade.equals(esp)) {
+            if (!profissionais.get(i).getEspecialidade().equals(esp)) {
                 continue;
             }
             encontrouEspecialidade = true;
-            if (profissionais.get(i).valorConsulta <= 0) {
+            if (profissionais.get(i).getValorConsulta() <= 0) {
                 continue;
             }
 
@@ -883,9 +884,9 @@ public class Main {
         int idxConsulta = -1;
 
         for (int i = 0; i < consultas.size(); i++) {
-            if (consultas.get(i).cpfPaciente.equals(cpf)
-                    && consultas.get(i).data.equals(data)
-                    && consultas.get(i).horario.equals(horario)) {
+            if (consultas.get(i).getCpfPaciente().equals(cpf)
+                    && consultas.get(i).getData().equals(data)
+                    && consultas.get(i).getHorario().equals(horario)) {
 
                 idxConsulta = i;
                 break;
@@ -897,12 +898,12 @@ public class Main {
             return;
         }
 
-        if (consultas.get(idxConsulta).status.equals("realizada")) {
+        if (consultas.get(idxConsulta).getStatus().equals("realizada")) {
             System.out.println("Consulta ja realizada. Nao pode cancelar.");
             return;
         }
 
-        if (consultas.get(idxConsulta).status.equals("cancelada")) {
+        if (consultas.get(idxConsulta).getStatus().equals("cancelada")) {
             System.out.println("Consulta ja cancelada.");
             return;
         }
@@ -945,10 +946,10 @@ public class Main {
         int idxConsulta = -1;
 
         for (int i = 0; i < consultas.size(); i++) {
-            if (consultas.get(i).cpfPaciente.equals(cpf)
-                    && consultas.get(i).data.equals(dataOriginal)
-                    && consultas.get(i).horario.equals(horarioOriginal)
-                    && consultas.get(i).status.equals("agendada")) {
+            if (consultas.get(i).getCpfPaciente().equals(cpf)
+                    && consultas.get(i).getData().equals(dataOriginal)
+                    && consultas.get(i).getHorario().equals(horarioOriginal)
+                    && consultas.get(i).getStatus().equals("agendada")) {
 
                 idxConsulta = i;
                 break;
@@ -979,7 +980,7 @@ public class Main {
             novoHorario = sc.nextLine();
         }
 
-        String nomeProf = consultas.get(idxConsulta).nomeProfissional;
+        String nomeProf = consultas.get(idxConsulta).getNomeProfissional();
         int idxProfissional = buscarIndiceProfissional(nomeProf);
 
         if (idxProfissional == -1) {
@@ -1008,7 +1009,7 @@ public class Main {
                 nomeProf,
                 novaData,
                 novoHorario,
-                consultas.get(idxConsulta).tipo
+                consultas.get(idxConsulta).getTipo()
         ));
 
         System.out.println("Consulta remarcada com sucesso!");
@@ -1032,7 +1033,7 @@ public class Main {
         boolean encontrou = false;
 
         for (int i = 0; i < consultas.size(); i++) {
-            if (consultas.get(i).cpfPaciente.equals(cpf)) {
+            if (consultas.get(i).getCpfPaciente().equals(cpf)) {
                 System.out.println("[" + i + "] " + consultas.get(i).exibirResumo());
                 encontrou = true;
             }
@@ -1056,10 +1057,10 @@ public class Main {
         }
 
         for (int i = 0; i < consultas.size(); i++) {
-            if (consultas.get(i).nomeProfissional.equals(nomeProf)
-                    && consultas.get(i).data.equals(data)
-                    && consultas.get(i).horario.equals(horario)
-                    && consultas.get(i).status.equals("agendada")) {
+            if (consultas.get(i).getNomeProfissional().equals(nomeProf)
+                    && consultas.get(i).getData().equals(data)
+                    && consultas.get(i).getHorario().equals(horario)
+                    && consultas.get(i).getStatus().equals("agendada")) {
 
                 return true;
             }
@@ -1160,16 +1161,21 @@ public class Main {
     }
 
     public static void registrarAtendimento() {
-        System.out.print("Indice da consulta: ");
-        int idxConsulta = Integer.parseInt(sc.nextLine());
+        int idxConsulta = lerInteiro("Indice da consulta: ");
 
         if (idxConsulta < 0 || idxConsulta >= consultas.size()) {
             System.out.println("Indice invalido.");
             return;
         }
 
-        if (!consultas.get(idxConsulta).status.equals("agendada")) {
-            System.out.println("So pode registrar atendimento em consulta agendada.");
+        if (!consultas.get(idxConsulta).getStatus().equals("agendada")) {
+            try {
+                throw new OperacaoInvalidaException(
+                        "So pode registrar atendimento em consulta agendada."
+                );
+            } catch (OperacaoInvalidaException e) {
+                System.out.println(e.getMessage());
+            }
             return;
         }
 
@@ -1254,10 +1260,12 @@ public class Main {
             System.out.println("Tipo de registro invalido.");
             return;
         }
-        String nomeProfissional = consultas.get(idxConsulta).nomeProfissional;
+        String nomeProfissional = consultas.get(idxConsulta).getNomeProfissional();
         int idxProf = buscarIndiceProfissional(nomeProfissional);
-        
-        if (idxProf != -1 && profissionais.get(idxProf) instanceof Psicologo) {
+
+        // LIGACAO DINAMICA conforme R5: cada especialidade adiciona ao
+        // atendimento as informacoes particulares dela (registrarEspecifico).
+        if (idxProf != -1) {
             profissionais.get(idxProf).registrarEspecifico(atendimentos.get(atendimentos.size() - 1));
         }
         consultas.get(idxConsulta).realizar();
@@ -1365,7 +1373,7 @@ public class Main {
 
         Consulta consulta = consultas.get(idxConsulta);
         int idxProfissional = buscarIndiceProfissional(
-                consulta.nomeProfissional
+                consulta.getNomeProfissional()
         );
 
         if (idxProfissional == -1) {
@@ -1374,7 +1382,7 @@ public class Main {
         }
 
         int idxPaciente = buscarIndicePaciente(
-                consulta.cpfPaciente
+                consulta.getCpfPaciente()
         );
 
         if (idxPaciente == -1) {
@@ -1385,7 +1393,7 @@ public class Main {
         Profissional profissional = profissionais.get(idxProfissional);
         Paciente paciente = pacientes.get(idxPaciente);
 
-        double valorBase = profissional.valorConsulta;
+        double valorBase = profissional.getValorConsulta();
 
         if (valorBase < 0) {
             System.out.println("Valor da consulta invalido.");
@@ -1437,8 +1445,8 @@ public class Main {
                     pagamento = new PagamentoConvenio(
                             idxConsulta,
                             valorBase,
-                            paciente.convenio,
-                            profissional.especialidade,
+                            paciente.getConvenio(),
+                            profissional.getEspecialidade(),
                             valorMulta
                     );
                     break;
@@ -1464,7 +1472,7 @@ public class Main {
     public static void adicionarPagamento(Pagamento pagamento) {
         // LIGACAO DINAMICA conforme R5:
         // o metodo executado depende da subclasse real do objeto.
-        pagamento.valorFinal = pagamento.calcularValorFinal();
+        pagamento.setValorFinal(pagamento.calcularValorFinal());
         pagamentos.add(pagamento);
     }
 
@@ -1478,7 +1486,7 @@ public class Main {
 
         for (Pagamento pagamento : pagamentos) {
             // LIGACAO DINAMICA conforme R5.
-            pagamento.valorFinal = pagamento.calcularValorFinal();
+            pagamento.setValorFinal(pagamento.calcularValorFinal());
 
             System.out.println(
                     pagamento.getClass().getSimpleName()
@@ -1552,7 +1560,7 @@ public class Main {
     private static Map<Integer, Atendimento> mapaAtendimentosPorConsulta() {
         Map<Integer, Atendimento> mapa = new HashMap<>();
         for (Atendimento atendimento : atendimentos) {
-            mapa.put(atendimento.indiceConsulta, atendimento);
+            mapa.put(atendimento.getIndiceConsulta(), atendimento);
         }
         return mapa;
     }
