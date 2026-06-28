@@ -23,6 +23,7 @@ import br.com.clinicaVidaPlena.model.pessoa.Nutricionista;
 import br.com.clinicaVidaPlena.model.pessoa.Pessoa;
 import br.com.clinicaVidaPlena.model.pessoa.Profissional;
 import br.com.clinicaVidaPlena.model.pessoa.Psicologo;
+import br.com.clinicaVidaPlena.model.Exportavel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
