@@ -207,9 +207,7 @@ public class Main {
 
         int tipo = lerInteiro("Tipo (1-Minimo / 2-Com idade e tel / 3-Completo): ");
 
-        Paciente novoPaciente;
-
-         Paciente paciente;
+        Paciente paciente;
 
         if (tipo == 1) {
             paciente = new Paciente(nome, cpf);
@@ -1200,8 +1198,6 @@ public class Main {
         String observacoes = sc.nextLine();
 
         int tipo = lerInteiro("Tipo de registro (1-So obs / 2-Com diagnostico / 3-Completo): ");
-
-        Atendimento novoAtendimento;
 
         if (tipo == 1) {
             atendimentos.add(new Atendimento(
