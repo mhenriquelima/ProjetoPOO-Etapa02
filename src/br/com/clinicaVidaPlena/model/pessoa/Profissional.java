@@ -1,17 +1,21 @@
 package br.com.clinicaVidaPlena.model.pessoa;
 
+import br.com.clinicaVidaPlena.model.Atendimento;
+import br.com.clinicaVidaPlena.model.HorarioDisponivel;
 import java.util.ArrayList;
 import java.util.List;
 
-import br.com.clinicaVidaPlena.model.HorarioDisponivel;
-
 public abstract class Profissional extends Pessoa {
-    public String especialidade;
-    public String registroProfissional;
-    public double valorConsulta;
+    protected String especialidade;
+    protected String registroProfissional;
+    protected double valorConsulta;
     // AGREGAÇÃO (R8)
     private List<HorarioDisponivel> horariosDisponiveis;    
 
+    // SOBRECARGA: 3 construtores com o mesmo nome (Profissional), mas
+    // assinaturas diferentes - permitem cadastrar o profissional com
+    // diferentes niveis de detalhe (so nome, com registro/valor, ou completo
+    // com horarios de atendimento).
     public Profissional(String nome, String especialidade) {
         super(nome, "00000000000", "Não Informado", "01/01/1980");
         this.especialidade = especialidade;
@@ -44,7 +48,32 @@ public abstract class Profissional extends Pessoa {
         return this.registroProfissional != null && !this.registroProfissional.trim().isEmpty();
     }
 
-    public abstract void registrarEspecifico(Object atendimento);
+    public String getEspecialidade() {
+        return especialidade;
+    }
+
+    public void setEspecialidade(String especialidade) {
+        this.especialidade = especialidade;
+    }
+
+    public String getRegistroProfissional() {
+        return registroProfissional;
+    }
+
+    public void setRegistroProfissional(String registroProfissional) {
+        this.registroProfissional = registroProfissional;
+    }
+
+    public double getValorConsulta() {
+        return valorConsulta;
+    }
+
+    public void setValorConsulta(double valorConsulta) {
+        this.valorConsulta = valorConsulta;
+    }
+
+    // adiciona ao atendimento as informacoes particulares de cada especialidade
+    public abstract void registrarEspecifico(Atendimento atendimento);
 
     public void atualizar(String registro, double valor) {
         this.registroProfissional = registro;
@@ -108,6 +137,8 @@ public abstract class Profissional extends Pessoa {
         return false;
     }
 
+    // SOBRESCRITA: implementa o metodo abstrato exibirResumo() declarado em
+    // Pessoa, dando ao profissional sua propria representacao em texto.
     @Override
     public String exibirResumo() {
         String dias = "";

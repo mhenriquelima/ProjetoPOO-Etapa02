@@ -1,10 +1,13 @@
 package br.com.clinicaVidaPlena.model.pessoa;
 
+import br.com.clinicaVidaPlena.model.Atendimento;
+
 // classe psicologo herda da classe abstrata profissional
 public class Psicologo extends Profissional {
     private String abordagem;
 
-    // recebe apenas o nome
+    // SOBRECARGA: 3 construtores com o mesmo nome (Psicologo) - recebe
+    // apenas o nome
     public Psicologo(String nome) {
         super(nome, "psicologia");
         this.abordagem = "Não informada";
@@ -26,13 +29,16 @@ public class Psicologo extends Profissional {
         this.abordagem = abordagem;
     }
 
-    // sobrescrita do metodo abstrato da classe pai
+    // SOBRESCRITA: implementa o metodo abstrato registrarEspecifico()
+    // declarado em Profissional, adicionando ao atendimento a informacao
+    // particular da psicologia (a abordagem terapeutica usada).
     @Override
-    public void registrarEspecifico(Object atendimento) {
-        System.out.println("registro específico para psicologia");
+    public void registrarEspecifico(Atendimento atendimento) {
+        atendimento.adicionarProcedimento("Sessao de psicoterapia - abordagem: " + abordagem);
     }
 
-    // sobrescreve o metodo exibirResumo da classe pai
+    // SOBRESCRITA: estende o exibirResumo() de Profissional, reaproveitando
+    // (super.exibirResumo()) e completando com o dado especifico da classe.
     @Override
     public String exibirResumo() {
         String resumo = super.exibirResumo();

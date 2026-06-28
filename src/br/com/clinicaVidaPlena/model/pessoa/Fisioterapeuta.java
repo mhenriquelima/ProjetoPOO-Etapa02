@@ -1,10 +1,13 @@
 package br.com.clinicaVidaPlena.model.pessoa;
 
+import br.com.clinicaVidaPlena.model.Atendimento;
+
 // classe fisioterapeuta herda da classe abstrata profissional
 public class Fisioterapeuta extends Profissional {
     private int totalSessoesPrevistas;
 
-    // recebe apenas o nome
+    // SOBRECARGA: 3 construtores com o mesmo nome (Fisioterapeuta) - recebe
+    // apenas o nome
     public Fisioterapeuta(String nome) {
         super(nome, "fisioterapia");
         this.totalSessoesPrevistas = 10;
@@ -26,14 +29,19 @@ public class Fisioterapeuta extends Profissional {
         System.out.println("Sessão de fisioterapia registrada com sucesso!");
     }
 
-    // sobreescrita do metodo abstrato da classe pai
+    // SOBRESCRITA: implementa o metodo abstrato registrarEspecifico()
+    // declarado em Profissional, adicionando ao atendimento a informacao
+    // particular da fisioterapia (quantas sessoes ainda restam).
     @Override
-    public void registrarEspecifico(Object atendimento) {
-        System.out.println("Registro específico para fisioterapia"); 
-
+    public void registrarEspecifico(Atendimento atendimento) {
+        totalSessoesPrevistas--;
+        atendimento.adicionarProcedimento(
+                "Sessao de fisioterapia - sessoes restantes: " + Math.max(0, totalSessoesPrevistas)
+        );
     }
 
-    //sobreescreve o metodo exibirResumo da classe pai
+    // SOBRESCRITA: estende o exibirResumo() de Profissional, reaproveitando
+    // (super.exibirResumo()) e completando com o dado especifico da classe.
     @Override
     public String exibirResumo() {
         String resumo = super.exibirResumo();

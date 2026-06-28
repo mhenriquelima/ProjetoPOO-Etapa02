@@ -1,5 +1,7 @@
 package br.com.clinicaVidaPlena.model.pessoa;
 
+import br.com.clinicaVidaPlena.model.Atendimento;
+
 public class ClinicoGeral extends Profissional {
     private String encaminhamento;
 
@@ -23,8 +25,8 @@ public class ClinicoGeral extends Profissional {
     }
 
     @Override
-    public void registrarEspecifico(Object atendimento) {
-        System.out.println("Registro específico para clínica geral");
+    public void registrarEspecifico(Atendimento atendimento) {
+        atendimento.adicionarProcedimento("Consulta clinica geral - encaminhamento: " + encaminhamento);
     }
 
     @Override
