@@ -25,7 +25,10 @@ import br.com.clinicaVidaPlena.model.pessoa.Profissional;
 import br.com.clinicaVidaPlena.model.pessoa.Psicologo;
 import br.com.clinicaVidaPlena.model.Exportavel;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.HashSet;
 import java.util.Map;
@@ -64,9 +67,7 @@ public class Main {
             System.out.println("5 - Pagamentos");
             System.out.println("6 - Relatorios");
             System.out.println("0 - Sair");
-            System.out.print("Escolha: ");
-
-            opcao = Integer.parseInt(sc.nextLine());
+            opcao = lerInteiro("Escolha: ");
 
             switch (opcao) {
                 case 1:
@@ -99,6 +100,55 @@ public class Main {
         System.out.println("Sistema encerrado.");
     }
 
+    /**
+     * Le um inteiro do teclado, validando a entrada.
+     * Trata NumberFormatException (texto onde se espera numero): exibe
+     * mensagem amigavel e pede novamente, sem encerrar o programa.
+     */
+    public static int lerInteiro(String mensagem) {
+        int valor = 0;
+        boolean valido = false;
+
+        while (!valido) {
+            try {
+                System.out.print(mensagem);
+                valor = Integer.parseInt(sc.nextLine());
+                valido = true;
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada invalida. Digite um numero inteiro.");
+            } finally {
+                // finally com proposito real: garante que toda tentativa de
+                // leitura (com sucesso ou nao) seja registrada no log.
+                System.out.println("--- Tentativa de leitura de inteiro finalizada ---");
+            }
+        }
+
+        return valor;
+    }
+
+    /**
+     * Le um double do teclado, validando a entrada.
+     * Mesma logica de lerInteiro, mas para valores monetarios.
+     */
+    public static double lerDouble(String mensagem) {
+        double valor = 0;
+        boolean valido = false;
+
+        while (!valido) {
+            try {
+                System.out.print(mensagem);
+                valor = Double.parseDouble(sc.nextLine());
+                valido = true;
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada invalida. Digite um valor numerico (ex: 150.00).");
+            } finally {
+                System.out.println("--- Tentativa de leitura de valor finalizada ---");
+            }
+        }
+
+        return valor;
+    }
+
     // -------------------------------------------------------------------------
     // PACIENTES
     // -------------------------------------------------------------------------
@@ -114,9 +164,7 @@ public class Main {
             System.out.println("4 - Listar todos");
             System.out.println("5 - Desativar");
             System.out.println("0 - Voltar");
-            System.out.print("Opcao: ");
-
-            op = Integer.parseInt(sc.nextLine());
+            op = lerInteiro("Opcao: ");
 
             switch (op) {
                 case 1:
@@ -155,8 +203,9 @@ public class Main {
             return;
         }
 
-        System.out.print("Tipo (1-Minimo / 2-Com idade e tel / 3-Completo): ");
-        int tipo = Integer.parseInt(sc.nextLine());
+        int tipo = lerInteiro("Tipo (1-Minimo / 2-Com idade e tel / 3-Completo): ");
+
+        Paciente novoPaciente;
 
          Paciente paciente;
 
@@ -164,8 +213,7 @@ public class Main {
             paciente = new Paciente(nome, cpf);
 
         } else if (tipo == 2) {
-            System.out.print("Idade: ");
-            int idade = Integer.parseInt(sc.nextLine());
+            int idade = lerInteiro("Idade: ");
 
             System.out.print("Telefone: ");
             String telefone = sc.nextLine();
@@ -173,8 +221,7 @@ public class Main {
             paciente = new Paciente(nome, cpf, idade, telefone);
 
         } else if (tipo == 3) {
-            System.out.print("Idade: ");
-            int idade = Integer.parseInt(sc.nextLine());
+            int idade = lerInteiro("Idade: ");
 
             System.out.print("Telefone: ");
             String telefone = sc.nextLine();
@@ -206,11 +253,9 @@ public class Main {
             return;
         }
 
-        System.out.print("Vai informar convenio? (1-Nao / 2-Sim): ");
-        int tipo = Integer.parseInt(sc.nextLine());
+        int tipo = lerInteiro("Vai informar convenio? (1-Nao / 2-Sim): ");
 
-        System.out.print("Idade: ");
-        int idade = Integer.parseInt(sc.nextLine());
+        int idade = lerInteiro("Idade: ");
 
         System.out.print("Telefone: ");
         String telefone = sc.nextLine();
@@ -241,9 +286,7 @@ public class Main {
         System.out.println("2 - VidaMais (30%)");
         System.out.println("3 - BemEstar (50%)");
         System.out.println("0 - Sem convenio");
-        System.out.print("Escolha: ");
-
-        int opcao = Integer.parseInt(sc.nextLine());
+        int opcao = lerInteiro("Escolha: ");
 
         String nome;
         double percentual;
@@ -270,8 +313,7 @@ public class Main {
 
         Convenio convenio = new Convenio(nome, percentual);
 
-        System.out.print("Quantas especialidades esse convenio cobre? ");
-        int quantidade = Integer.parseInt(sc.nextLine());
+        int quantidade = lerInteiro("Quantas especialidades esse convenio cobre? ");
 
         for (int i = 0; i < quantidade; i++) {
             System.out.print("Especialidade " + (i + 1) + ": ");
@@ -286,9 +328,11 @@ public class Main {
         System.out.print("CPF: ");
         String cpf = sc.nextLine();
 
-        int idx = buscarIndicePaciente(cpf);
+        // HashMap<String, Paciente>.get(): busca por chave, mais eficiente
+        // que percorrer a lista inteira de pacientes.
+        Paciente paciente = pacientesPorCpf.get(cpf);
 
-        if (idx == -1) {
+        if (paciente == null) {
             System.out.println("Paciente nao encontrado.");
         } else {
             System.out.println(pacientes.get(idx).exibirResumo());
@@ -311,9 +355,9 @@ public class Main {
         System.out.print("CPF: ");
         String cpf = sc.nextLine();
 
-        int idx = buscarIndicePaciente(cpf);
+        Paciente paciente = pacientesPorCpf.get(cpf);
 
-        if (idx == -1) {
+        if (paciente == null) {
             System.out.println("Paciente nao encontrado.");
         } else {
             pacientes.get(idx).desativar();
@@ -345,9 +389,7 @@ public class Main {
             System.out.println("3 - Listar todos");
             System.out.println("4 - Filtrar por especialidade");
             System.out.println("0 - Voltar");
-            System.out.print("Opcao: ");
-
-            op = Integer.parseInt(sc.nextLine());
+            op = lerInteiro("Opcao: ");
 
             switch (op) {
                 case 1:
@@ -460,8 +502,7 @@ public class Main {
             return;
         }
 
-        System.out.print("Tipo (1-Minimo / 2-Com registro e valor / 3-Completo): ");
-        int tipo = Integer.parseInt(sc.nextLine());
+        int tipo = lerInteiro("Tipo (1-Minimo / 2-Com registro e valor / 3-Completo): ");
 
         Profissional profissional;
 
@@ -475,8 +516,7 @@ public class Main {
             System.out.print("Registro: ");
             String registro = sc.nextLine();
 
-            System.out.print("Valor consulta: ");
-            double valor = Double.parseDouble(sc.nextLine());
+            double valor = lerDouble("Valor consulta: ");
 
             profissional = criarProfissionalPorEspecialidade(
                     nome,
@@ -489,11 +529,9 @@ public class Main {
             System.out.print("Registro: ");
             String registro = sc.nextLine();
 
-            System.out.print("Valor consulta: ");
-            double valor = Double.parseDouble(sc.nextLine());
+            double valor = lerDouble("Valor consulta: ");
 
-            System.out.print("Quantos dias atende? ");
-            int quantidade = Integer.parseInt(sc.nextLine());
+            int quantidade = lerInteiro("Quantos dias atende? ");
 
             if (quantidade < 0) {
                 quantidade = 0;
@@ -546,21 +584,18 @@ public class Main {
             return;
         }
 
-        System.out.print("Vai informar dias? (1-Nao / 2-Sim): ");
-        int tipo = Integer.parseInt(sc.nextLine());
+        int tipo = lerInteiro("Vai informar dias? (1-Nao / 2-Sim): ");
 
         System.out.print("Registro: ");
         String registro = sc.nextLine();
 
-        System.out.print("Valor consulta: ");
-        double valor = Double.parseDouble(sc.nextLine());
+        double valor = lerDouble("Valor consulta: ");
 
         if (tipo == 1) {
             profissionais.get(idx).atualizar(registro, valor);
 
         } else if (tipo == 2) {
-            System.out.print("Quantos dias? ");
-            int quantidade = Integer.parseInt(sc.nextLine());
+        int quantidade = lerInteiro("Quantos dias? ");
 
             if (quantidade < 0) {
                 quantidade = 0;
@@ -647,9 +682,7 @@ public class Main {
             System.out.println("5 - Listar todas");
             System.out.println("6 - Buscar por CPF");
             System.out.println("0 - Voltar");
-            System.out.print("Opcao: ");
-
-            op = Integer.parseInt(sc.nextLine());
+            op = lerInteiro("Opcao: ");
 
             switch (op) {
                 case 1:
@@ -700,8 +733,7 @@ public class Main {
                 throw new HorarioIndisponivelException("Horario ocupado para esse profissional.");
             }
 
-            System.out.print("Informar tipo? (1-Nao / 2-Sim): ");
-            int infoTipo = Integer.parseInt(sc.nextLine());
+            int infoTipo = lerInteiro("Informar tipo? (1-Nao / 2-Sim): ");
 
             Agendavel agendamento;
             if (infoTipo == 1) {
@@ -819,8 +851,7 @@ public class Main {
     }
 
     private static void tentarSugestaoHorario() {
-        System.out.print("Deseja tentar sugestao de horario? (1-Sim / 2-Nao): ");
-        int escolha = Integer.parseInt(sc.nextLine());
+        int escolha = lerInteiro("Deseja tentar sugestao de horario? (1-Sim / 2-Nao): ");
         if (escolha != 1) {
             return;
         }
@@ -888,8 +919,7 @@ public class Main {
             multas.add(50.0);
         }
 
-        System.out.print("Informar motivo? (1-Nao / 2-Sim): ");
-        int informarMotivo = Integer.parseInt(sc.nextLine());
+        int informarMotivo = lerInteiro("Informar motivo? (1-Nao / 2-Sim): ");
 
         if (informarMotivo == 1) {
             consultas.get(idxConsulta).cancelar();
@@ -930,8 +960,7 @@ public class Main {
             return;
         }
 
-        System.out.print("Apenas trocar horario no mesmo dia? (1-Sim / 2-Nao): ");
-        int tipo = Integer.parseInt(sc.nextLine());
+        int tipo = lerInteiro("Apenas trocar horario no mesmo dia? (1-Sim / 2-Nao): ");
 
         String novaData;
         String novoHorario;
@@ -1120,9 +1149,7 @@ public class Main {
             System.out.println("\n--- ATENDIMENTOS ---");
             System.out.println("1 - Registrar atendimento");
             System.out.println("0 - Voltar");
-            System.out.print("Opcao: ");
-
-            op = Integer.parseInt(sc.nextLine());
+            op = lerInteiro("Opcao: ");
 
             if (op == 1) {
                 registrarAtendimento();
@@ -1149,8 +1176,9 @@ public class Main {
         System.out.print("Observacoes: ");
         String observacoes = sc.nextLine();
 
-        System.out.print("Tipo de registro (1-So obs / 2-Com diagnostico / 3-Completo): ");
-        int tipo = Integer.parseInt(sc.nextLine());
+        int tipo = lerInteiro("Tipo de registro (1-So obs / 2-Com diagnostico / 3-Completo): ");
+
+        Atendimento novoAtendimento;
 
         if (tipo == 1) {
             atendimentos.add(new Atendimento(
@@ -1172,10 +1200,9 @@ public class Main {
             System.out.print("Diagnostico: ");
             String diagnostico = sc.nextLine();
 
-            System.out.print(
+            int forma = lerInteiro(
                     "Como informar procedimentos? (1-Um por vez / 2-Todos de uma vez): "
             );
-            int forma = Integer.parseInt(sc.nextLine());
 
             String[] procedimentos = new String[10];
             int quantidadeProcedimentos = 0;
@@ -1195,8 +1222,7 @@ public class Main {
                 }
 
             } else if (forma == 2) {
-                System.out.print("Quantos? ");
-                quantidadeProcedimentos = Integer.parseInt(sc.nextLine());
+            quantidadeProcedimentos = lerInteiro("Quantos? ");
 
                 if (quantidadeProcedimentos < 0) {
                     quantidadeProcedimentos = 0;
@@ -1254,9 +1280,7 @@ public class Main {
             System.out.println("2 - Pagamento automatico");
             System.out.println("3 - Listar pagamentos");
             System.out.println("0 - Voltar");
-            System.out.print("Opcao: ");
-
-            op = Integer.parseInt(sc.nextLine());
+            op = lerInteiro("Opcao: ");
 
             switch (op) {
                 case 1:
@@ -1278,16 +1302,14 @@ public class Main {
     }
 
     public static void pagamentoDireto() {
-        System.out.print("Indice da consulta: ");
-        int idxConsulta = Integer.parseInt(sc.nextLine());
+        int idxConsulta = lerInteiro("Indice da consulta: ");
 
         if (idxConsulta < 0 || idxConsulta >= consultas.size()) {
             System.out.println("Indice invalido.");
             return;
         }
 
-        System.out.print("Valor base: ");
-        double valorBase = Double.parseDouble(sc.nextLine());
+        double valorBase = lerDouble("Valor base: ");
 
         if (valorBase < 0) {
             System.out.println("Valor invalido.");
@@ -1307,8 +1329,7 @@ public class Main {
                 );
 
             } else if (tipoPagamento.equals("cartao")) {
-                System.out.print("Parcelas (1 a 6): ");
-                int parcelas = Integer.parseInt(sc.nextLine());
+            int parcelas = lerInteiro("Parcelas (1 a 6): ");
 
                 pagamento = new PagamentoCartao(
                         idxConsulta,
@@ -1335,8 +1356,7 @@ public class Main {
     }
 
     public static void pagamentoAutomatico() {
-        System.out.print("Indice da consulta: ");
-        int idxConsulta = Integer.parseInt(sc.nextLine());
+        int idxConsulta = lerInteiro("Indice da consulta: ");
 
         if (idxConsulta < 0 || idxConsulta >= consultas.size()) {
             System.out.println("Indice invalido.");
@@ -1372,14 +1392,12 @@ public class Main {
             return;
         }
 
-        System.out.print("Tem multa pendente? (1-Nao / 2-Sim): ");
-        int possuiMulta = Integer.parseInt(sc.nextLine());
+        int possuiMulta = lerInteiro("Tem multa pendente? (1-Nao / 2-Sim): ");
 
         double valorMulta = 0.0;
 
         if (possuiMulta == 2) {
-            System.out.print("Valor da multa: ");
-            valorMulta = Double.parseDouble(sc.nextLine());
+        valorMulta = lerDouble("Valor da multa: ");
 
             if (valorMulta < 0) {
                 System.out.println("Valor da multa invalido.");
@@ -1405,8 +1423,7 @@ public class Main {
                     break;
 
                 case "cartao":
-                    System.out.print("Parcelas (1 a 6): ");
-                    int parcelas = Integer.parseInt(sc.nextLine());
+                int parcelas = lerInteiro("Parcelas (1 a 6): ");
 
                     pagamento = new PagamentoCartao(
                             idxConsulta,
@@ -1529,6 +1546,27 @@ public class Main {
     // RELATORIOS
     // -------------------------------------------------------------------------
 
+    // HashMap<Integer, Atendimento>: liga o indice da consulta ao atendimento
+    // correspondente, para o Relatorio buscar o diagnostico por indice (get)
+    // em vez de percorrer a lista inteira de atendimentos.
+    private static Map<Integer, Atendimento> mapaAtendimentosPorConsulta() {
+        Map<Integer, Atendimento> mapa = new HashMap<>();
+        for (Atendimento atendimento : atendimentos) {
+            mapa.put(atendimento.indiceConsulta, atendimento);
+        }
+        return mapa;
+    }
+
+    // HashMap<Integer, Double>: liga o indice da consulta multada ao valor
+    // da multa, no mesmo espirito do mapa de atendimentos acima.
+    private static Map<Integer, Double> mapaMultasPorIndice() {
+        Map<Integer, Double> mapa = new HashMap<>();
+        for (int i = 0; i < multas.size(); i++) {
+            mapa.put(i, multas.get(i));
+        }
+        return mapa;
+    }
+
     public static void menuRelatorios() {
         int op = -1;
 
@@ -1542,9 +1580,7 @@ public class Main {
             System.out.println("6 - Relatorio unificado de pessoas");
             System.out.println("7 - Exportar dados operacionais");
             System.out.println("0 - Voltar");
-            System.out.print("Opcao: ");
-
-            op = Integer.parseInt(sc.nextLine());
+            op = lerInteiro("Opcao: ");
 
             switch (op) {
                 case 1:
@@ -1595,12 +1631,16 @@ public class Main {
                             multas.size()
                     );
                     break;
-
                 case 5:
+                    Relatorio.gerarRelatorioCancelamentos(consultas);
+                    break;
+                case 6:
+                    Relatorio.gerarRelatorioMultasAplicadas(mapaMultasPorIndice());
+                    break;
+                case 7:
                     Relatorio.gerarRelatorioPagamentos(pagamentos);
                     break;
-
-                case 6:
+                case 8:
                     relatorioUnificadoPessoas();
                     break;
                 
@@ -1609,7 +1649,6 @@ public class Main {
 
                 case 0:
                     break;
-
                 default:
                     System.out.println("Opcao invalida!");
                     break;

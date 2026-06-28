@@ -1,8 +1,10 @@
 package br.com.clinicaVidaPlena.model;
-
 import br.com.clinicaVidaPlena.model.pagamento.Pagamento;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class Relatorio {
 
@@ -68,10 +70,10 @@ public class Relatorio {
         ArrayList<Double> multas,
         int totalMultas) {
 
-    int realizadas = 0;
-    int canceladas = 0;
-    double totalFaturado = 0;
-    double totalEmMultas = 0;
+    // relatorio de cancelamentos
+    public static void gerarRelatorioCancelamentos(List<Consulta> consultas) {
+        System.out.println("\n=== RELATORIO DE CANCELAMENTOS ===");
+        boolean achou = false;
 
     for (int i = 0; i < consultas.size(); i++) {
         if (consultas.get(i).status.equals("realizada")) {
@@ -83,45 +85,42 @@ public class Relatorio {
         }
     }
 
-    for (Pagamento pagamento : pagamentos) {
-
-        // LIGACAO DINAMICA conforme R5
-        totalFaturado +=
-                pagamento.calcularValorFinal();
+    public static void gerarRelatorioCancelamentos(Consulta[] consultas, int totalConsultas) {
+        gerarRelatorioCancelamentos(converterConsultas(consultas, totalConsultas));
     }
 
     for (int i = 0; i < totalMultas; i++) {
         totalEmMultas += multas.get(i);
     }
 
-    System.out.println(
-            "\n=== RESUMO FINANCEIRO ==="
-    );
+    public static void gerarRelatorioMultasAplicadas(double[] multas, int totalMultas) {
+        gerarRelatorioMultasAplicadas(converterMultas(multas, totalMultas));
+    }
 
-    System.out.println(
-            "Atendimentos realizados: "
-                    + realizadas
-    );
+    // resumo financeiro do dia
+    public static void gerarResumoFinanceiro(List<Consulta> consultas,
+                                             List<Pagamento> pagamentos,
+                                             Map<Integer, Double> multas) {
+        int realizadas = 0;
+        int canceladas = 0;
+        double totalFaturado = 0;
+        double totalEmMultas = 0;
 
-    System.out.println(
-            "Total faturado: R$"
-                    + Math.round(
-                            totalFaturado * 100.0
-                    ) / 100.0
-    );
+        for (int i = 0; i < consultas.size(); i++) {
+            if (consultas.get(i).status.equals("realizada")) realizadas++;
+            if (consultas.get(i).status.equals("cancelada")) canceladas++;
+        }
 
-    System.out.println(
-            "Cancelamentos: "
-                    + canceladas
-    );
+        for (int i = 0; i < pagamentos.size(); i++) {
+            totalFaturado = totalFaturado + pagamentos.get(i).valorFinal;
+        }
 
-    System.out.println(
-            "Total em multas: R$"
-                    + Math.round(
-                            totalEmMultas * 100.0
-                    ) / 100.0
-    );
-}
+        if (multas != null) {
+            for (double valorMulta : multas.values()) {
+                totalEmMultas = totalEmMultas + valorMulta;
+            }
+        }
+    }
 
     // busca diagnostico de um atendimento pelo indice da consulta
     public static String buscarDiagnostico(int indiceConsulta, ArrayList<Atendimento>atendimentos) {
@@ -131,6 +130,50 @@ public class Relatorio {
             }
         }
         return "";
+    }
+
+    public static String buscarDiagnostico(int indiceConsulta, Atendimento[] atendimentos, int total) {
+        return buscarDiagnostico(indiceConsulta, converterAtendimentos(atendimentos, total));
+    }
+
+    private static List<Consulta> converterConsultas(Consulta[] consultas, int totalConsultas) {
+        List<Consulta> lista = new ArrayList<>();
+
+        for (int i = 0; i < totalConsultas; i++) {
+            lista.add(consultas[i]);
+        }
+
+        return lista;
+    }
+
+    private static List<Pagamento> converterPagamentos(Pagamento[] pagamentos, int totalPagamentos) {
+        List<Pagamento> lista = new ArrayList<>();
+
+        for (int i = 0; i < totalPagamentos; i++) {
+            lista.add(pagamentos[i]);
+        }
+
+        return lista;
+    }
+
+    private static Map<Integer, Atendimento> converterAtendimentos(Atendimento[] atendimentos, int totalAtendimentos) {
+        Map<Integer, Atendimento> mapa = new LinkedHashMap<>();
+
+        for (int i = 0; i < totalAtendimentos; i++) {
+            mapa.put(atendimentos[i].indiceConsulta, atendimentos[i]);
+        }
+
+        return mapa;
+    }
+
+    private static Map<Integer, Double> converterMultas(double[] multas, int totalMultas) {
+        Map<Integer, Double> mapa = new LinkedHashMap<>();
+
+        for (int i = 0; i < totalMultas; i++) {
+            mapa.put(i, multas[i]);
+        }
+
+        return mapa;
     }
 
     // compara datas convertendo pra numero inteiro (AAAAMMDD)
