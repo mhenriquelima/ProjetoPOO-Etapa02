@@ -2,11 +2,11 @@ package br.com.clinicaVidaPlena.model.pagamento;
 import br.com.clinicaVidaPlena.model.Exportavel;
 public abstract class Pagamento implements Exportavel {
 
-    public int indiceConsulta;
+    private int indiceConsulta;
     protected double valorBase;
-    public double valorFinal;
-    public String tipoPagamento;
-    public int parcelas;
+    protected double valorFinal;
+    private String tipoPagamento;
+    protected int parcelas;
     protected double multa;
 
     protected Pagamento(int indiceConsulta,
@@ -46,6 +46,22 @@ public abstract class Pagamento implements Exportavel {
 
     public double getValorFinal() {
         return valorFinal;
+    }
+
+    public void setValorFinal(double valorFinal) {
+        this.valorFinal = valorFinal;
+    }
+
+    public int getIndiceConsulta() {
+        return indiceConsulta;
+    }
+
+    public String getTipoPagamento() {
+        return tipoPagamento;
+    }
+
+    public int getParcelas() {
+        return parcelas;
     }
 
     @Override

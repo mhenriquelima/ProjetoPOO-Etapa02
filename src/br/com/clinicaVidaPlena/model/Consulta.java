@@ -5,12 +5,12 @@ package br.com.clinicaVidaPlena.model;
 // Java permite apenas 1 extends, mas múltiplos implements
 
 public class Consulta implements Agendavel, Exportavel {
-    public String cpfPaciente;
-    public String nomeProfissional;
-    public String data;
-    public String horario;
-    public String tipo;
-    public String status;
+    private String cpfPaciente;
+    private String nomeProfissional;
+    private String data;
+    private String horario;
+    private String tipo;
+    private String status;
 
     // sem tipo - assume inicial
     public Consulta(String cpfPaciente, String nomeProfissional, String data, String horario) {
@@ -65,6 +65,30 @@ public class Consulta implements Agendavel, Exportavel {
 
     public void realizar() {
         this.status = "realizada";
+    }
+
+    public String getCpfPaciente() {
+        return cpfPaciente;
+    }
+
+    public String getNomeProfissional() {
+        return nomeProfissional;
+    }
+
+    public String getData() {
+        return data;
+    }
+
+    public String getHorario() {
+        return horario;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public String exibirResumo() {
