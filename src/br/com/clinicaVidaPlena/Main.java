@@ -26,10 +26,7 @@ import br.com.clinicaVidaPlena.model.pessoa.Profissional;
 import br.com.clinicaVidaPlena.model.pessoa.Psicologo;
 import br.com.clinicaVidaPlena.model.Exportavel;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,6 +46,10 @@ public class Main {
 
     // Map foi escolhido para permitir busca rápida de pacientes pelo CPF.
     static Map<String, Paciente> pacientesPorCpf = new HashMap<>();
+
+    // HashMap<String, Profissional>: busca por chave (nome do profissional),
+    // mais eficiente do que percorrer a lista inteira a cada agendamento.
+    static Map<String, Profissional> profissionaisPorNome = new HashMap<>();
 
     // Lista polimorfica: armazena qualquer subclasse de Pagamento.
     static List<Pagamento> pagamentos = new ArrayList<>();
@@ -569,6 +570,7 @@ public class Main {
         }
 
         profissionais.add(profissional);
+        profissionaisPorNome.put(profissional.getNome(), profissional);
         pessoas.add(profissional);
 
         System.out.println("Profissional cadastrado!");
@@ -658,13 +660,15 @@ public class Main {
     }
 
     public static int buscarIndiceProfissional(String nome) {
-        for (int i = 0; i < profissionais.size(); i++) {
-            if (profissionais.get(i).getNome().equals(nome)) {
-                return i;
-            }
+        // HashMap<String, Profissional>.get(): busca por chave, mais
+        // eficiente do que percorrer a lista inteira (O(1) vs O(n)).
+        Profissional profissional = profissionaisPorNome.get(nome);
+
+        if (profissional == null) {
+            return -1;
         }
 
-        return -1;
+        return profissionais.indexOf(profissional);
     }
 
     // -------------------------------------------------------------------------
@@ -747,9 +751,22 @@ public class Main {
 
             consultas.add((Consulta) agendamento);
             System.out.println("Consulta agendada com sucesso!");
-        } catch (PacienteNaoEncontradoException | PacienteInativoException
-                | ProfissionalNaoEncontradoException | ValorInvalidoException
-                | HorarioIndisponivelException e) {
+        // EXCECOES: blocos catch separados para cada tipo, conforme R9 -
+        // cada exceção tem sua própria mensagem específica, em vez de um
+        // único catch multi-tipo genérico.
+        } catch (PacienteNaoEncontradoException e) {
+            System.out.println(e.getMessage());
+            tentarSugestaoHorario();
+        } catch (PacienteInativoException e) {
+            System.out.println(e.getMessage());
+            tentarSugestaoHorario();
+        } catch (ProfissionalNaoEncontradoException e) {
+            System.out.println(e.getMessage());
+            tentarSugestaoHorario();
+        } catch (ValorInvalidoException e) {
+            System.out.println(e.getMessage());
+            tentarSugestaoHorario();
+        } catch (HorarioIndisponivelException e) {
             System.out.println(e.getMessage());
             tentarSugestaoHorario();
         }
