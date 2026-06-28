@@ -6,11 +6,11 @@ package br.com.clinicaVidaPlena.model;
 
 public class Consulta implements Agendavel, Exportavel {
     private String cpfPaciente;
-    private String nomeProfissional;
-    private String data;
+    protected String nomeProfissional;
+    protected String data;
     private String horario;
     private String tipo;
-    private String status;
+    protected String status;
 
     // sem tipo - assume inicial
     public Consulta(String cpfPaciente, String nomeProfissional, String data, String horario) {

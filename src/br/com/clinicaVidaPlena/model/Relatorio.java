@@ -4,7 +4,6 @@ import br.com.clinicaVidaPlena.model.pagamento.Pagamento;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
 public class Relatorio {
@@ -34,7 +33,7 @@ public class Relatorio {
         System.out.println("\n=== RELATORIO - " + nomeProfissional + " ===");
         boolean achou = false;
         for (int i = 0; i < consultas.size(); i++) {
-            if (consultas.get(i).nomeProfissional.equals(nomeProfissional)) {
+            if (consultas.get(i).getNomeProfissional().equals(nomeProfissional)) {
                 System.out.println(consultas.get(i).exibirResumo());
                 String diag = buscarDiagnostico(i, atendimentos);
                 if (!diag.equals("")) {
@@ -60,7 +59,7 @@ public class Relatorio {
                                       String dataInicio, String dataFim) {
         System.out.println("\n=== RELATORIO - " + dataInicio + " a " + dataFim + " ===");
         for (int i = 0; i < consultas.size(); i++) {
-            if (estaNoIntervalo(consultas.get(i).data, dataInicio, dataFim)) {
+            if (estaNoIntervalo(consultas.get(i).getData(), dataInicio, dataFim)) {
                 System.out.println(consultas.get(i).exibirResumo());
                 String diag = buscarDiagnostico(i, atendimentos);
                 if (!diag.equals("")) {
@@ -83,7 +82,7 @@ public class Relatorio {
         boolean achou = false;
 
         for (int i = 0; i < consultas.size(); i++) {
-            if (consultas.get(i).status.equals("cancelada")) {
+            if (consultas.get(i).getStatus().equals("cancelada")) {
                 System.out.println(consultas.get(i).exibirResumo());
                 System.out.println("---");
                 achou = true;
@@ -132,12 +131,12 @@ public class Relatorio {
         double totalEmMultas = 0;
 
         for (int i = 0; i < consultas.size(); i++) {
-            if (consultas.get(i).status.equals("realizada")) realizadas++;
-            if (consultas.get(i).status.equals("cancelada")) canceladas++;
+            if (consultas.get(i).getStatus().equals("realizada")) realizadas++;
+            if (consultas.get(i).getStatus().equals("cancelada")) canceladas++;
         }
 
         for (int i = 0; i < pagamentos.size(); i++) {
-            totalFaturado = totalFaturado + pagamentos.get(i).valorFinal;
+            totalFaturado = totalFaturado + pagamentos.get(i).getValorFinal();
         }
 
         if (multas != null) {
@@ -165,7 +164,7 @@ public class Relatorio {
 
     public static String buscarDiagnostico(int indiceConsulta, ArrayList<Atendimento> atendimentos) {
         for (Atendimento atendimento : atendimentos) {
-            if (atendimento.indiceConsulta == indiceConsulta) {
+            if (atendimento.getIndiceConsulta() == indiceConsulta) {
                 return atendimento.getDiagnostico();
             }
         }
@@ -200,7 +199,7 @@ public class Relatorio {
         Map<Integer, Atendimento> mapa = new LinkedHashMap<>();
 
         for (int i = 0; i < totalAtendimentos; i++) {
-            mapa.put(atendimentos[i].indiceConsulta, atendimentos[i]);
+            mapa.put(atendimentos[i].getIndiceConsulta(), atendimentos[i]);
         }
 
         return mapa;
@@ -210,7 +209,7 @@ public class Relatorio {
         Map<Integer, Atendimento> mapa = new LinkedHashMap<>();
 
         for (int i = 0; i < totalAtendimentos && i < atendimentos.size(); i++) {
-            mapa.put(atendimentos.get(i).indiceConsulta, atendimentos.get(i));
+            mapa.put(atendimentos.get(i).getIndiceConsulta(), atendimentos.get(i));
         }
 
         return mapa;
@@ -263,8 +262,7 @@ public class Relatorio {
             double valorCalculado =
                     pagamento.calcularValorFinal();
 
-            pagamento.valorFinal =
-                    valorCalculado;
+            pagamento.setValorFinal(valorCalculado);
 
             System.out.println(
                     pagamento.getClass()

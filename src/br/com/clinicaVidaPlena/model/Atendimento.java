@@ -36,21 +36,21 @@ public class Atendimento implements Exportavel {
 
     public String exibirResumo() {
 
-        String resumo = "Observacoes: " + prontuario.observacoes;
+        String resumo = "Observacoes: " + prontuario.getObservacoes();
 
-        if (!prontuario.diagnostico.equals("")) {
-            resumo += "\nDiagnostico: " + prontuario.diagnostico;
+        if (!prontuario.getDiagnostico().equals("")) {
+            resumo += "\nDiagnostico: " + prontuario.getDiagnostico();
         }
 
-        if (!prontuario.procedimentosRealizados.isEmpty()) {
+        if (!prontuario.getProcedimentosRealizados().isEmpty()) {
 
             resumo += "\nProcedimentos: ";
 
-            for (int i = 0; i < prontuario.procedimentosRealizados.size(); i++) {
+            for (int i = 0; i < prontuario.getProcedimentosRealizados().size(); i++) {
 
-                resumo += prontuario.procedimentosRealizados.get(i);
+                resumo += prontuario.getProcedimentosRealizados().get(i);
 
-                if (i < prontuario.procedimentosRealizados.size() - 1) {
+                if (i < prontuario.getProcedimentosRealizados().size() - 1) {
                     resumo += ", ";
                 }
             }
@@ -60,7 +60,7 @@ public class Atendimento implements Exportavel {
     }
     
     public String getDiagnostico() {
-        return prontuario.diagnostico;
+        return prontuario.getDiagnostico();
     }
 
     public int getIndiceConsulta() {
