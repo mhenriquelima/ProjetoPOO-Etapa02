@@ -1,6 +1,6 @@
 package br.com.clinicaVidaPlena.model;
 
-public class Atendimento {
+public class Atendimento implements Exportavel {
     public int indiceConsulta;
     // COMPOSIÇÃO (R8)
     private Prontuario prontuario;
@@ -61,6 +61,11 @@ public class Atendimento {
     
     public String getDiagnostico() {
         return prontuario.diagnostico;
+    }
+
+   @Override
+    public String exportarDados() {
+        return exibirResumo();
     }
 
 }

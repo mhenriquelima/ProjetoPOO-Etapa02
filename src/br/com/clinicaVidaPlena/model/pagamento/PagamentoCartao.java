@@ -1,9 +1,9 @@
 package br.com.clinicaVidaPlena.model.pagamento;
-
+import br.com.clinicaVidaPlena.model.Exportavel;
 import br.com.clinicaVidaPlena.Exceptions.PagamentoInvalidoException;
 
 
-public class PagamentoCartao extends Pagamento {
+public class PagamentoCartao extends Pagamento implements Exportavel{
 
     private static final int MINIMO_PARCELAS = 1;
     private static final int MAXIMO_PARCELAS = 6;
@@ -62,5 +62,9 @@ public class PagamentoCartao extends Pagamento {
                 valorBase * (1.0 + percentualTaxa);
 
         return arredondar(valorComTaxa + multa);
+    }
+    @Override
+    public String exportarDados() {
+        return exibirResumo();
     }
 }

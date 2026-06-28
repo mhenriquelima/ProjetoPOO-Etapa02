@@ -23,48 +23,34 @@ import br.com.clinicaVidaPlena.model.pessoa.Nutricionista;
 import br.com.clinicaVidaPlena.model.pessoa.Pessoa;
 import br.com.clinicaVidaPlena.model.pessoa.Profissional;
 import br.com.clinicaVidaPlena.model.pessoa.Psicologo;
+import br.com.clinicaVidaPlena.model.Exportavel;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.Set;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Main {
 
-    // ArrayList<Paciente>: ordem de cadastro importa e acesso por indice
-    // ainda e usado em varias telas (listagem, busca por posicao).
-    static List<Paciente> pacientes = new ArrayList<>();
+    // List foi escolhida porque mantém a ordem de inserção e permite acesso por índice
+    static ArrayList<Paciente> pacientes = new ArrayList<>();
+    static ArrayList<Profissional> profissionais = new ArrayList<>();
+    static ArrayList<Consulta> consultas = new ArrayList<>();
+    static ArrayList<Atendimento> atendimentos = new ArrayList<>();
+    static ArrayList<Double> multas = new ArrayList<>();
 
-    // ArrayList<Profissional>: mesmo motivo de Paciente.
-    static List<Profissional> profissionais = new ArrayList<>();
+    // Set foi escolhido para garantir que não existam CPFs duplicados.
+    static HashSet<String> cpfs = new HashSet<>();
 
-    // ArrayList<Consulta>: ordem de agendamento importa; o indice da lista
-    // tambem e usado como "indiceConsulta" para amarrar Atendimento/Pagamento.
-    static List<Consulta> consultas = new ArrayList<>();
-
-    // ArrayList<Atendimento>: ordem de criacao importa.
-    static List<Atendimento> atendimentos = new ArrayList<>();
+    // Map foi escolhido para permitir busca rápida de pacientes pelo CPF.
+    static Map<String, Paciente> pacientesPorCpf = new HashMap<>();
 
     // Lista polimorfica: armazena qualquer subclasse de Pagamento.
     static List<Pagamento> pagamentos = new ArrayList<>();
-
-    // ArrayList<Double>: substitui o array fixo de multas.
-    static List<Double> multas = new ArrayList<>();
-
-    // HashSet<String>: so precisamos verificar existencia (contains) do CPF
-    // antes de cadastrar; ordem nao importa, e contains() e mais eficiente
-    // que percorrer a lista de pacientes inteira.
-    static Set<String> cpfsCadastrados = new HashSet<>();
-
-    // HashMap<String, Paciente>: busca rapida de paciente pelo CPF (chave),
-    // mais eficiente que percorrer a lista a cada operacao.
-    static Map<String, Paciente> pacientesPorCpf = new HashMap<>();
-
-    // HashMap<String, Profissional>: busca rapida de profissional pelo nome.
-    static Map<String, Profissional> profissionaisPorNome = new HashMap<>();
-
     static List<Pessoa> pessoas = new ArrayList<Pessoa>();
 
     static Scanner sc = new Scanner(System.in);
@@ -212,10 +198,8 @@ public class Main {
         System.out.print("CPF: ");
         String cpf = sc.nextLine();
 
-        // HashSet<String>.contains(): verificacao de existencia mais
-        // eficiente que percorrer a lista inteira de pacientes.
-        if (cpfsCadastrados.contains(cpf)) {
-            System.out.println("CPF ja cadastrado!");
+        if (!cpfs.add(cpf)) {
+            System.out.println("CPF já cadastrado.");
             return;
         }
 
@@ -223,8 +207,10 @@ public class Main {
 
         Paciente novoPaciente;
 
+         Paciente paciente;
+
         if (tipo == 1) {
-            novoPaciente = new Paciente(nome, cpf);
+            paciente = new Paciente(nome, cpf);
 
         } else if (tipo == 2) {
             int idade = lerInteiro("Idade: ");
@@ -232,12 +218,7 @@ public class Main {
             System.out.print("Telefone: ");
             String telefone = sc.nextLine();
 
-            novoPaciente = new Paciente(
-                    nome,
-                    cpf,
-                    idade,
-                    telefone
-            );
+            paciente = new Paciente(nome, cpf, idade, telefone);
 
         } else if (tipo == 3) {
             int idade = lerInteiro("Idade: ");
@@ -247,23 +228,17 @@ public class Main {
 
             Convenio convenio = cadastrarConvenioDoPaciente();
 
-            novoPaciente = new Paciente(
-                    nome,
-                    cpf,
-                    idade,
-                    telefone,
-                    convenio
-            );
+            paciente = new Paciente(nome, cpf, idade, telefone, convenio);
+            
 
         } else {
             System.out.println("Tipo de cadastro invalido.");
             return;
         }
-
-        pacientes.add(novoPaciente);
-        pessoas.add(novoPaciente);
-        cpfsCadastrados.add(cpf);
-        pacientesPorCpf.put(cpf, novoPaciente);
+        pacientes.add(paciente);
+        pessoas.add(paciente);
+        pacientesPorCpf.put(paciente.getCpf(), paciente);
+        
         System.out.println("Paciente cadastrado com sucesso!");
     }
 
@@ -360,20 +335,21 @@ public class Main {
         if (paciente == null) {
             System.out.println("Paciente nao encontrado.");
         } else {
-            System.out.println(paciente.exibirResumo());
+            System.out.println(pacientes.get(idx).exibirResumo());
         }
     }
 
-    public static void listarPacientes() {
-        if (pacientes.isEmpty()) {
-            System.out.println("Nenhum paciente cadastrado.");
-            return;
-        }
-
-        for (Paciente paciente : pacientes) {
-            System.out.println(paciente.exibirResumo());
-        }
+   public static void listarPacientes() {
+    if (pacientesPorCpf.isEmpty()) {
+        System.out.println("Nenhum paciente cadastrado.");
+        return;
     }
+
+    for (Map.Entry<String, Paciente> entry : pacientesPorCpf.entrySet()) {
+        System.out.println("CPF: " + entry.getKey());
+        System.out.println(entry.getValue().exibirResumo());
+    }
+}
 
     public static void desativarPaciente() {
         System.out.print("CPF: ");
@@ -384,7 +360,7 @@ public class Main {
         if (paciente == null) {
             System.out.println("Paciente nao encontrado.");
         } else {
-            paciente.desativar();
+            pacientes.get(idx).desativar();
             System.out.println("Paciente desativado.");
         }
     }
@@ -392,7 +368,7 @@ public class Main {
     public static int buscarIndicePaciente(String cpf) {
         for (int i = 0; i < pacientes.size(); i++) {
             if (pacientes.get(i).getCpf().equals(cpf)) {
-                return i;
+            return i;
             }
         }
 
@@ -593,7 +569,6 @@ public class Main {
 
         profissionais.add(profissional);
         pessoas.add(profissional);
-        profissionaisPorNome.put(profissional.getNome(), profissional);
 
         System.out.println("Profissional cadastrado!");
     }
@@ -637,12 +612,12 @@ public class Main {
                 dias[i] = sc.nextLine().trim().toLowerCase();
             }
 
-            profissionais.get(idx).atualizar(
-                    registro,
-                    valor,
-                    dias,
-                    quantidade
-            );
+        profissionais.get(idx).atualizar(
+            registro,
+            valor,
+            dias,
+            quantidade
+        );
 
         } else {
             System.out.println("Opcao invalida.");
@@ -669,9 +644,9 @@ public class Main {
 
         boolean encontrou = false;
 
-        for (Profissional profissional : profissionais) {
-            if (profissional.especialidade.equals(especialidade)) {
-                System.out.println(profissional.exibirResumo());
+        for (int i = 0; i < profissionais.size(); i++) {
+            if (profissionais.get(i).especialidade.equals(especialidade)) {
+                System.out.println(profissionais.get(i).exibirResumo());
                 encontrou = true;
             }
         }
@@ -811,15 +786,18 @@ public class Main {
     }
 
     private static void validarPacienteAtivo(String cpf)
-            throws PacienteNaoEncontradoException, PacienteInativoException {
-        int idxPac = buscarIndicePaciente(cpf);
-        if (idxPac == -1) {
+        throws PacienteNaoEncontradoException, PacienteInativoException {
+
+        Paciente paciente = pacientesPorCpf.get(cpf);
+
+        if (paciente == null) {
             throw new PacienteNaoEncontradoException("Paciente nao encontrado.");
         }
-        if (!pacientes.get(idxPac).ativo) {
+
+        if (!paciente.ativo) {
             throw new PacienteInativoException("Paciente inativo. Nao e possivel agendar.");
         }
-    }
+    }   
 
     private static int validarProfissionalParaAgendamento(String nomeProf)
             throws ProfissionalNaoEncontradoException, ValorInvalidoException {
@@ -1182,7 +1160,8 @@ public class Main {
     }
 
     public static void registrarAtendimento() {
-        int idxConsulta = lerInteiro("Indice da consulta: ");
+        System.out.print("Indice da consulta: ");
+        int idxConsulta = Integer.parseInt(sc.nextLine());
 
         if (idxConsulta < 0 || idxConsulta >= consultas.size()) {
             System.out.println("Indice invalido.");
@@ -1202,20 +1181,20 @@ public class Main {
         Atendimento novoAtendimento;
 
         if (tipo == 1) {
-            novoAtendimento = new Atendimento(
+            atendimentos.add(new Atendimento(
                     idxConsulta,
                     observacoes
-            );
+            ));
 
         } else if (tipo == 2) {
             System.out.print("Diagnostico: ");
             String diagnostico = sc.nextLine();
 
-            novoAtendimento = new Atendimento(
+            atendimentos.add(new Atendimento(
                     idxConsulta,
                     observacoes,
                     diagnostico
-            );
+            ));
 
         } else if (tipo == 3) {
             System.out.print("Diagnostico: ");
@@ -1239,7 +1218,6 @@ public class Main {
 
                     if (!procedimento.equals("fim")) {
                         procedimentos[quantidadeProcedimentos] = procedimento;
-                        quantidadeProcedimentos++;
                     }
                 }
 
@@ -1264,13 +1242,13 @@ public class Main {
                 return;
             }
 
-            novoAtendimento = new Atendimento(
+            atendimentos.add(new Atendimento(
                     idxConsulta,
                     observacoes,
                     diagnostico,
                     procedimentos,
                     quantidadeProcedimentos
-            );
+            ));
 
         } else {
             System.out.println("Tipo de registro invalido.");
@@ -1278,15 +1256,14 @@ public class Main {
         }
         String nomeProfissional = consultas.get(idxConsulta).nomeProfissional;
         int idxProf = buscarIndiceProfissional(nomeProfissional);
-
+        
         if (idxProf != -1 && profissionais.get(idxProf) instanceof Psicologo) {
-            profissionais.get(idxProf).registrarEspecifico(novoAtendimento);
+            profissionais.get(idxProf).registrarEspecifico(atendimentos.get(atendimentos.size() - 1));
         }
         consultas.get(idxConsulta).realizar();
-        atendimentos.add(novoAtendimento);
 
         System.out.println("\n--- RESUMO ---");
-        System.out.println(novoAtendimento.exibirResumo());
+        System.out.println(atendimentos.get(atendimentos.size() - 1).exibirResumo());
         System.out.println("Consulta marcada como realizada.");
     }
 
@@ -1387,7 +1364,6 @@ public class Main {
         }
 
         Consulta consulta = consultas.get(idxConsulta);
-
         int idxProfissional = buscarIndiceProfissional(
                 consulta.nomeProfissional
         );
@@ -1553,6 +1529,18 @@ public class Main {
         System.out.println("Total de pacientes: " + totalPacientesRelatorio);
         System.out.println("Total de profissionais: " + totalProfissionaisRelatorio);
     }
+    public static void exportarDadosOperacionais() {
+
+        List<Exportavel> exportacoes = new ArrayList<>();
+
+        exportacoes.addAll(consultas);
+        exportacoes.addAll(atendimentos);
+        exportacoes.addAll(pagamentos);
+
+        for (Exportavel item : exportacoes) {
+            System.out.println(item.exportarDados());
+        }
+    }
 
     // -------------------------------------------------------------------------
     // RELATORIOS
@@ -1588,10 +1576,9 @@ public class Main {
             System.out.println("2 - Por profissional");
             System.out.println("3 - Por periodo");
             System.out.println("4 - Resumo financeiro");
-            System.out.println("5 - Cancelamentos");
-            System.out.println("6 - Multas aplicadas");
-            System.out.println("7 - Relatorio de pagamentos");
-            System.out.println("8 - Relatorio unificado de pessoas");
+            System.out.println("5 - Relatorio de pagamentos");
+            System.out.println("6 - Relatorio unificado de pessoas");
+            System.out.println("7 - Exportar dados operacionais");
             System.out.println("0 - Voltar");
             op = lerInteiro("Opcao: ");
 
@@ -1599,7 +1586,9 @@ public class Main {
                 case 1:
                     Relatorio.gerarRelatorio(
                             consultas,
-                            mapaAtendimentosPorConsulta()
+                            consultas.size(),
+                            atendimentos,
+                            atendimentos.size()
                     );
                     break;
 
@@ -1609,7 +1598,9 @@ public class Main {
 
                     Relatorio.gerarRelatorio(
                             consultas,
-                            mapaAtendimentosPorConsulta(),
+                            consultas.size(),
+                            atendimentos,
+                            atendimentos.size(),
                             nome
                     );
                     break;
@@ -1623,7 +1614,9 @@ public class Main {
 
                     Relatorio.gerarRelatorio(
                             consultas,
-                            mapaAtendimentosPorConsulta(),
+                            consultas.size(),
+                            atendimentos,
+                            atendimentos.size(),
                             inicio,
                             fim
                     );
@@ -1632,8 +1625,10 @@ public class Main {
                 case 4:
                     Relatorio.gerarResumoFinanceiro(
                             consultas,
+                            consultas.size(),
                             pagamentos,
-                            mapaMultasPorIndice()
+                            multas,
+                            multas.size()
                     );
                     break;
                 case 5:
@@ -1648,6 +1643,10 @@ public class Main {
                 case 8:
                     relatorioUnificadoPessoas();
                     break;
+                
+                case 7:
+                    exportarDadosOperacionais();
+
                 case 0:
                     break;
                 default:

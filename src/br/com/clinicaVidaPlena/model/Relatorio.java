@@ -3,15 +3,16 @@ import br.com.clinicaVidaPlena.model.pagamento.Pagamento;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 public class Relatorio {
 
     // mostra todas as consultas
-    public static void gerarRelatorio(List<Consulta> consultas,
-                                      Map<Integer, Atendimento> atendimentos) {
+    public static void gerarRelatorio(ArrayList<Consulta> consultas, int totalConsultas,
+                                      ArrayList<Atendimento> atendimentos, int totalAtendimentos) {
         System.out.println("\n=== RELATORIO GERAL ===");
-        for (int i = 0; i < consultas.size(); i++) {
+        for (int i = 0; i < totalConsultas; i++) {
             System.out.println(consultas.get(i).exibirResumo());
             // verifica se tem diagnostico
             String diag = buscarDiagnostico(i, atendimentos);
@@ -22,19 +23,13 @@ public class Relatorio {
         }
     }
 
-    public static void gerarRelatorio(Consulta[] consultas, int totalConsultas,
-                                      Atendimento[] atendimentos, int totalAtendimentos) {
-        gerarRelatorio(converterConsultas(consultas, totalConsultas),
-                converterAtendimentos(atendimentos, totalAtendimentos));
-    }
-
     // filtra por profissional
-    public static void gerarRelatorio(List<Consulta> consultas,
-                                      Map<Integer, Atendimento> atendimentos,
+    public static void gerarRelatorio(ArrayList<Consulta> consultas, int totalConsultas,
+                                      ArrayList<Atendimento> atendimentos, int totalAtendimentos,
                                       String nomeProfissional) {
         System.out.println("\n=== RELATORIO - " + nomeProfissional + " ===");
         boolean achou = false;
-        for (int i = 0; i < consultas.size(); i++) {
+        for (int i = 0; i < totalConsultas; i++) {
             if (consultas.get(i).nomeProfissional.equals(nomeProfissional)) {
                 System.out.println(consultas.get(i).exibirResumo());
                 String diag = buscarDiagnostico(i, atendimentos);
@@ -50,20 +45,12 @@ public class Relatorio {
         }
     }
 
-    public static void gerarRelatorio(Consulta[] consultas, int totalConsultas,
-                                      Atendimento[] atendimentos, int totalAtendimentos,
-                                      String nomeProfissional) {
-        gerarRelatorio(converterConsultas(consultas, totalConsultas),
-                converterAtendimentos(atendimentos, totalAtendimentos),
-                nomeProfissional);
-    }
-
     // filtra por periodo (data inicio e fim)
-    public static void gerarRelatorio(List<Consulta> consultas,
-                                      Map<Integer, Atendimento> atendimentos,
+    public static void gerarRelatorio(ArrayList<Consulta> consultas, int totalConsultas,
+                                      ArrayList<Atendimento> atendimentos, int totalAtendimentos,
                                       String dataInicio, String dataFim) {
         System.out.println("\n=== RELATORIO - " + dataInicio + " a " + dataFim + " ===");
-        for (int i = 0; i < consultas.size(); i++) {
+        for (int i = 0; i < totalConsultas; i++) {
             if (estaNoIntervalo(consultas.get(i).data, dataInicio, dataFim)) {
                 System.out.println(consultas.get(i).exibirResumo());
                 String diag = buscarDiagnostico(i, atendimentos);
@@ -75,29 +62,26 @@ public class Relatorio {
         }
     }
 
-    public static void gerarRelatorio(Consulta[] consultas, int totalConsultas,
-                                      Atendimento[] atendimentos, int totalAtendimentos,
-                                      String dataInicio, String dataFim) {
-        gerarRelatorio(converterConsultas(consultas, totalConsultas),
-                converterAtendimentos(atendimentos, totalAtendimentos),
-                dataInicio, dataFim);
-    }
+    // resumo financeiro do dia
+    public static void gerarResumoFinanceiro(
+        ArrayList<Consulta> consultas,
+        int totalConsultas,
+        List<Pagamento> pagamentos,
+        ArrayList<Double> multas,
+        int totalMultas) {
 
     // relatorio de cancelamentos
     public static void gerarRelatorioCancelamentos(List<Consulta> consultas) {
         System.out.println("\n=== RELATORIO DE CANCELAMENTOS ===");
         boolean achou = false;
 
-        for (int i = 0; i < consultas.size(); i++) {
-            if (consultas.get(i).status.equals("cancelada")) {
-                System.out.println(consultas.get(i).exibirResumo());
-                System.out.println("---");
-                achou = true;
-            }
+    for (int i = 0; i < consultas.size(); i++) {
+        if (consultas.get(i).status.equals("realizada")) {
+            realizadas++;
         }
 
-        if (!achou) {
-            System.out.println("Nenhum cancelamento encontrado.");
+        if (consultas.get(i).status.equals("cancelada")) {
+            canceladas++;
         }
     }
 
@@ -105,23 +89,8 @@ public class Relatorio {
         gerarRelatorioCancelamentos(converterConsultas(consultas, totalConsultas));
     }
 
-    // relatorio de multas aplicadas
-    public static void gerarRelatorioMultasAplicadas(Map<Integer, Double> multas) {
-        System.out.println("\n=== RELATORIO DE MULTAS APLICADAS ===");
-
-        if (multas == null || multas.isEmpty()) {
-            System.out.println("Nenhuma multa aplicada.");
-            return;
-        }
-
-        double total = 0;
-
-        for (Map.Entry<Integer, Double> entrada : multas.entrySet()) {
-            System.out.println("Consulta #" + entrada.getKey() + " | Multa: R$" + entrada.getValue());
-            total = total + entrada.getValue();
-        }
-
-        System.out.println("Total em multas: R$" + Math.round(total * 100.0) / 100.0);
+    for (int i = 0; i < totalMultas; i++) {
+        totalEmMultas += multas.get(i);
     }
 
     public static void gerarRelatorioMultasAplicadas(double[] multas, int totalMultas) {
@@ -154,14 +123,11 @@ public class Relatorio {
     }
 
     // busca diagnostico de um atendimento pelo indice da consulta
-    public static String buscarDiagnostico(int indiceConsulta, Map<Integer, Atendimento> atendimentos) {
-        if (atendimentos == null) {
-            return "";
-        }
-
-        Atendimento atendimento = atendimentos.get(indiceConsulta);
-        if (atendimento != null) {
-            return atendimento.getDiagnostico();
+    public static String buscarDiagnostico(int indiceConsulta, ArrayList<Atendimento>atendimentos) {
+        for (Atendimento atendimento : atendimentos) {
+            if (atendimento.indiceConsulta == indiceConsulta) {
+                return atendimento.getDiagnostico();
+            }
         }
         return "";
     }

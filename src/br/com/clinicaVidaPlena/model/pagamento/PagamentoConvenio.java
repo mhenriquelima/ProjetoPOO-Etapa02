@@ -1,9 +1,10 @@
 package br.com.clinicaVidaPlena.model.pagamento;
 
+import br.com.clinicaVidaPlena.model.Exportavel;
 import br.com.clinicaVidaPlena.Exceptions.ConvenioNaoCobreException;
 import br.com.clinicaVidaPlena.model.Convenio;
 
-public class PagamentoConvenio extends Pagamento {
+public class PagamentoConvenio extends Pagamento implements Exportavel{
 
     private Convenio convenio;
     private String especialidade;
@@ -89,5 +90,10 @@ public class PagamentoConvenio extends Pagamento {
                 + "%"
                 + " | Especialidade: "
                 + especialidade;
+    }
+
+    @Override
+    public String exportarDados() {
+        return exibirResumo();
     }
 }
