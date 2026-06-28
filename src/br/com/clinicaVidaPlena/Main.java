@@ -27,17 +27,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Main {
 
+    // List foi escolhida porque mantém a ordem de inserção e permite acesso por índice
     static ArrayList<Paciente> pacientes = new ArrayList<>();
     static ArrayList<Profissional> profissionais = new ArrayList<>();
     static ArrayList<Consulta> consultas = new ArrayList<>();
     static ArrayList<Atendimento> atendimentos = new ArrayList<>();
     static ArrayList<Double> multas = new ArrayList<>();
 
-    // Set: Utilizando Set porque o set nao aceita duplicidade de itens
+    // Set foi escolhido para garantir que não existam CPFs duplicados.
     static HashSet<String> cpfs = new HashSet<>();
+
+    // Map foi escolhido para permitir busca rápida de pacientes pelo CPF.
+    static Map<String, Paciente> pacientesPorCpf = new HashMap<>();
 
     // Lista polimorfica: armazena qualquer subclasse de Pagamento.
     static List<Pagamento> pagamentos = new ArrayList<>();
@@ -143,8 +149,9 @@ public class Main {
         System.out.print("CPF: ");
         String cpf = sc.nextLine();
 
-        if (cpfs.contains(cpf)) {
+        if (!cpfs.add(cpf)) {
             System.out.println("CPF já cadastrado.");
+            return;
         }
 
         System.out.print("Tipo (1-Minimo / 2-Com idade e tel / 3-Completo): ");
@@ -174,6 +181,7 @@ public class Main {
             Convenio convenio = cadastrarConvenioDoPaciente();
 
             paciente = new Paciente(nome, cpf, idade, telefone, convenio);
+            
 
         } else {
             System.out.println("Tipo de cadastro invalido.");
@@ -181,6 +189,7 @@ public class Main {
         }
         pacientes.add(paciente);
         pessoas.add(paciente);
+        pacientesPorCpf.put(paciente.getCpf(), paciente);
         
         System.out.println("Paciente cadastrado com sucesso!");
     }
@@ -285,16 +294,17 @@ public class Main {
         }
     }
 
-    public static void listarPacientes() {
-        if (pacientes.isEmpty()) {
-            System.out.println("Nenhum paciente cadastrado.");
-            return;
-        }
-
-        for (Paciente paciente : pacientes) {
-            System.out.println(paciente.exibirResumo());
-        }
+   public static void listarPacientes() {
+    if (pacientesPorCpf.isEmpty()) {
+        System.out.println("Nenhum paciente cadastrado.");
+        return;
     }
+
+    for (Map.Entry<String, Paciente> entry : pacientesPorCpf.entrySet()) {
+        System.out.println("CPF: " + entry.getKey());
+        System.out.println(entry.getValue().exibirResumo());
+    }
+}
 
     public static void desativarPaciente() {
         System.out.print("CPF: ");
@@ -743,15 +753,18 @@ public class Main {
     }
 
     private static void validarPacienteAtivo(String cpf)
-            throws PacienteNaoEncontradoException, PacienteInativoException {
-        int idxPac = buscarIndicePaciente(cpf);
-        if (idxPac == -1) {
+        throws PacienteNaoEncontradoException, PacienteInativoException {
+
+        Paciente paciente = pacientesPorCpf.get(cpf);
+
+        if (paciente == null) {
             throw new PacienteNaoEncontradoException("Paciente nao encontrado.");
         }
-        if (!pacientes.get(idxPac).ativo) {
+
+        if (!paciente.ativo) {
             throw new PacienteInativoException("Paciente inativo. Nao e possivel agendar.");
         }
-    }
+    }   
 
     private static int validarProfissionalParaAgendamento(String nomeProf)
             throws ProfissionalNaoEncontradoException, ValorInvalidoException {
@@ -1498,6 +1511,18 @@ public class Main {
         System.out.println("Total de pacientes: " + totalPacientesRelatorio);
         System.out.println("Total de profissionais: " + totalProfissionaisRelatorio);
     }
+    public static void exportarDadosOperacionais() {
+
+        List<Exportavel> exportacoes = new ArrayList<>();
+
+        exportacoes.addAll(consultas);
+        exportacoes.addAll(atendimentos);
+        exportacoes.addAll(pagamentos);
+
+        for (Exportavel item : exportacoes) {
+            System.out.println(item.exportarDados());
+        }
+    }
 
     // -------------------------------------------------------------------------
     // RELATORIOS
@@ -1514,6 +1539,7 @@ public class Main {
             System.out.println("4 - Resumo financeiro");
             System.out.println("5 - Relatorio de pagamentos");
             System.out.println("6 - Relatorio unificado de pessoas");
+            System.out.println("7 - Exportar dados operacionais");
             System.out.println("0 - Voltar");
             System.out.print("Opcao: ");
 
@@ -1576,6 +1602,9 @@ public class Main {
                 case 6:
                     relatorioUnificadoPessoas();
                     break;
+                
+                case 7:
+                    exportarDadosOperacionais();
 
                 case 0:
                     break;
